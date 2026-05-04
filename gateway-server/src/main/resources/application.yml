@@ -5,6 +5,13 @@ spring:
   application:
     name: gateway-service
 
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://lemur-18.cloud-iam.com/auth/realms/salon-auth-test
+
   cloud:
     gateway:
       discovery:
@@ -46,12 +53,13 @@ spring:
           predicates:
             - Path=/api/categories/**
 
-
+           #notification
         - id: notifications-service
           uri: lb://NOTIFICATIONS-SERVICE
           predicates:
             - Path=/api/notifications/**
 
+          #review-service
         - id: review-service
           uri: lb://REVIEW-SERVICE
           predicates:
@@ -66,12 +74,6 @@ spring:
             - Path=/api/payments/**
 
 
-  spring:
-    security:
-      oauth2:
-        resourceserver:
-          jwt:
-            issuer-uri: https://lemur-18.cloud-iam.com/auth/realms/salon-auth-test
 
 
 eureka:
