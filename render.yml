@@ -1,0 +1,164 @@
+services:
+  # ----------------------------------------
+  # 1. API GATEWAY
+  # ----------------------------------------
+  - type: web
+    name: gateway-service
+    env: docker
+    rootDir: gateway-server  # ⚠️ MUST match your exact folder
+    plan: free
+    envVars:
+      - key: SPRING_APPLICATION_NAME
+        value: gateway-service
+      - key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+        value: https://eureka-4.onrender.com/eureka/
+      - key: SPRING_CLOUD_CLIENT_SERVICEURL_DEFAULTZONE
+        value: https://eureka-4.onrender.com/eureka/
+      - key: EUREKA_INSTANCE_PREFER_IP_ADDRESS
+        value: "true"
+
+  # ----------------------------------------
+  # 2. USER SERVICE
+  # ----------------------------------------
+  - type: web
+    name: user-service
+    env: docker
+    rootDir: user-service
+    plan: free
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        value: jdbc:mysql://yq9eAkzxxvnYuz5.root:ER5KAuU7ycb51i90@gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/salon
+      - key: SPRING_DATASOURCE_USERNAME
+        value: yq9eAkzxxvnYuz5.root
+      - key: SPRING_DATASOURCE_PASSWORD
+        value: eBuktKaVtCAw3Dhk
+      - key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+        value: https://eureka-4.onrender.com/eureka/
+
+  # ----------------------------------------
+  # 3. BOOKING SERVICE
+  # ----------------------------------------
+  - type: web
+    name: booking-service
+    env: docker
+    rootDir: booking-service
+    plan: free
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        value: jdbc:mysql://yq9eAkzxxvnYuz5.root:ER5KAuU7ycb51i90@gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/salon
+      - key: SPRING_DATASOURCE_USERNAME
+        value: yq9eAkzxxvnYuz5.root
+      - key: SPRING_DATASOURCE_PASSWORD
+        value: eBuktKaVtCAw3Dhk
+      - key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+        value: https://eureka-4.onrender.com/eureka/
+
+  # ----------------------------------------
+  # 4. CATEGORY SERVICE
+  # ----------------------------------------
+  - type: web
+    name: category-service
+    env: docker
+    rootDir: category-service
+    plan: free
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        value: jdbc:mysql://yq9eAkzxxvnYuz5.root:ER5KAuU7ycb51i90@gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/salon
+      - key: SPRING_DATASOURCE_USERNAME
+        value: yq9eAkzxxvnYuz5.root
+      - key: SPRING_DATASOURCE_PASSWORD
+        value: eBuktKaVtCAw3Dhk
+      - key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+        value: https://eureka-4.onrender.com/eureka/
+
+  # ----------------------------------------
+  # 5. PAYMENT SERVICE
+  # ----------------------------------------
+  - type: web
+    name: payment-service
+    env: docker
+    rootDir: payment-service
+    plan: free
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        value: jdbc:mysql://yq9eAkzxxvnYuz5.root:ER5KAuU7ycb51i90@gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/salon
+      - key: SPRING_DATASOURCE_USERNAME
+        value: yq9eAkzxxvnYuz5.root
+      - key: SPRING_DATASOURCE_PASSWORD
+        value: eBuktKaVtCAw3Dhk
+      - key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+        value: https://eureka-4.onrender.com/eureka/
+
+  # ----------------------------------------
+  # 6. SALON SERVICE
+  # ----------------------------------------
+  - type: web
+    name: salon-service
+    env: docker
+    rootDir: salon-service
+    plan: free
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        value: jdbc:mysql://yq9eAkzxxvnYuz5.root:ER5KAuU7ycb51i90@gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/salon
+      - key: SPRING_DATASOURCE_USERNAME
+        value: yq9eAkzxxvnYuz5.root
+      - key: SPRING_DATASOURCE_PASSWORD
+        value: eBuktKaVtCAw3Dhk
+      - key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+        value: https://eureka-4.onrender.com/eureka/
+
+  # ----------------------------------------
+  # 7. SERVICE OFFERING
+  # ----------------------------------------
+  - type: web
+    name: service-offering
+    env: docker
+    rootDir: service-offering
+    plan: free
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        value: jdbc:mysql://yq9eAkzxxvnYuz5.root:ER5KAuU7ycb51i90@gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/salon
+      - key: SPRING_DATASOURCE_USERNAME
+        value: yq9eAkzxxvnYuz5.root
+      - key: SPRING_DATASOURCE_PASSWORD
+        value: eBuktKaVtCAw3Dhk
+      - key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+        value: https://eureka-4.onrender.com/eureka/
+
+  # ----------------------------------------
+  # 8. NOTIFICATION
+  # ----------------------------------------
+  - type: web
+    name: service-eight
+    env: docker
+    rootDir: notification
+    plan: free
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        value: jdbc:mysql://yq9eAkzxxvnYuz5.root:ER5KAuU7ycb51i90@gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/salon
+      - key: SPRING_DATASOURCE_USERNAME
+        value: yq9eAkzxxvnYuz5.root
+      - key: SPRING_DATASOURCE_PASSWORD
+        value: eBuktKaVtCAw3Dhk
+      - key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+        value: https://eureka-4.onrender.com/eureka/
+
+  # ----------------------------------------
+  # 9. SERVICE NINE  review
+  # ----------------------------------------
+  - type: web
+    name: review
+    env: docker
+    rootDir: review
+    plan: free
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        value: jdbc:mysql://yq9eAkzxxvnYuz5.root:ER5KAuU7ycb51i90@gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/salon
+      - key: SPRING_DATASOURCE_USERNAME
+        value: yq9eAkzxxvnYuz5.root
+      - key: SPRING_DATASOURCE_PASSWORD
+        value: eBuktKaVtCAw3Dhk
+      - key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+        value: https://eureka-4.onrender.com/eureka/
+
+
