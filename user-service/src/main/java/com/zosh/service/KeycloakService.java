@@ -134,7 +134,7 @@ KeycloakService {
                                       String token,
                                       String role) {
 
-        String url=KEYCLOAK_BASE_URL+"/admin/realms/master/clients/"+clientId+"/roles/"+role;
+        String url=KEYCLOAK_BASE_URL+"/admin/realms/salon-auth-test/clients/"+clientId+"/roles/"+role;
 
         HttpHeaders headers=new HttpHeaders();
         headers.set("Authorization", "Bearer "+token);
@@ -158,7 +158,7 @@ KeycloakService {
 
     public KeycloakUserDTO fetchFirstUserByUsername(String username, String token) throws Exception {
 
-        String url=KEYCLOAK_BASE_URL+"/admin/realms/master/users?username="+username;
+        String url=KEYCLOAK_BASE_URL+"/admin/realms/salon-auth-test/users?username="+username;
 
         HttpHeaders headers=new HttpHeaders();
         headers.setBearerAuth(token);
@@ -191,7 +191,7 @@ KeycloakService {
                                  String token) throws Exception {
 
 
-        String url=KEYCLOAK_BASE_URL+"/admin/realms/master/users/"+userId+"/role-mappings/clients/"+clientId;
+        String url=KEYCLOAK_BASE_URL+"/admin/realms/salon-auth-test/users/"+userId+"/role-mappings/clients/"+clientId;
 
         HttpHeaders headers=new HttpHeaders();
         headers.setBearerAuth(token);
@@ -225,7 +225,7 @@ KeycloakService {
                                  ) throws Exception {
 
 
-        String url=KEYCLOAK_BASE_URL+"/realms/master/protocol/openid-connect/userinfo";
+        String url=KEYCLOAK_BASE_URL+"/realms/salon-auth-test/protocol/openid-connect/userinfo";
 
         HttpHeaders headers=new HttpHeaders();
         headers.set("Authorization", token);
