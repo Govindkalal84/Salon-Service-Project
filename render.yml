@@ -131,7 +131,7 @@ services:
   - type: web
     name: service-eight
     env: docker
-    rootDir: notification
+    rootDir: notifications
     plan: free
     envVars:
       - key: SPRING_DATASOURCE_URL

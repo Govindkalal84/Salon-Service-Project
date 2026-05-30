@@ -22,8 +22,11 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthResponse login(String username, String password) throws Exception {
 
+        User user = userRepository.findByEmail(username);
+        String usernameToUse = (user != null) ? user.getUsername() : username;
+
         TokenResponse tokenResponse=keycloakService.getAdminAccessToken(
-                username,
+                usernameToUse,
                 password,
                 "password",null);
 
