@@ -33,7 +33,7 @@ public class SecurityConfig {
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
 
         http.authorizeExchange(exchanges -> exchanges
-                .pathMatchers("/auth/**").permitAll()
+                .pathMatchers("/", "/auth/**").permitAll()
                 .pathMatchers("/api/notifications/ws/**").permitAll()
                 .pathMatchers("/api/categories/salon-owner/**",
                         "/api/notification/salon-owner/**",
