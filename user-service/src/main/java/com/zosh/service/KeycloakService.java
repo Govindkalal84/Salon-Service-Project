@@ -50,6 +50,7 @@ KeycloakService {
         userRequest.setUsername(signupDTO.getUsername());
         userRequest.setEmail(signupDTO.getEmail());
         userRequest.setEnabled(true);
+        userRequest.setEmailVerified(true);
         userRequest.setLastName(signupDTO.getFullName());
         userRequest.getCredentials().add(credential);
 
