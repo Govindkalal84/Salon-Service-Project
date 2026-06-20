@@ -124,7 +124,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         paymentLinkRequest.put("notify",notify);
 
-        paymentLinkRequest.put("callback_url","http://localhost:3000/payment-sucess/"+orderId);
+        paymentLinkRequest.put("callback_url","https://salon-service-project.vercel.app/payment-sucess/"+orderId);
 
         paymentLinkRequest.put("callback_method","get");
 
@@ -141,8 +141,8 @@ public class PaymentServiceImpl implements PaymentService {
         SessionCreateParams params= SessionCreateParams.builder()
                 .addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD)
                 .setMode(SessionCreateParams.Mode.PAYMENT)
-                .setSuccessUrl("http://localhost:3000/payment-sucess/"+orderId)
-                .setCancelUrl("http://localhost:3000/payment/cancel")
+                .setSuccessUrl("https://salon-service-project.vercel.app/payment-sucess/"+orderId)
+                .setCancelUrl("https://salon-service-project.vercel.app/payment/cancel")
                 .addLineItem(SessionCreateParams.LineItem.builder()
                 .setQuantity(1L)
                 .setPriceData(SessionCreateParams.LineItem.PriceData.builder()
