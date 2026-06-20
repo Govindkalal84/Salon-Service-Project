@@ -83,8 +83,12 @@ export async function apiRequest(endpoint: string, options: any = {}): Promise<a
     if (!response.ok) {
       // Handle offline/gateway errors by prompting Demo Mode
       if (response.status === 503 || response.status === 502 || response.status === 504) {
-        handleFailoverPrompt(`The backend service is sleeping or unavailable (Status ${response.status}).`);
-        throw new Error("DEMO_MODE_ACTIVATED");
+        if (!options.noFailover) {
+          handleFailoverPrompt(`The backend service is sleeping or unavailable (Status ${response.status}).`);
+          throw new Error("DEMO_MODE_ACTIVATED");
+        } else {
+          throw new Error(`HTTP_ERROR: Status ${response.status}`);
+        }
       }
       
       const errorText = await response.text();
@@ -114,8 +118,11 @@ export async function apiRequest(endpoint: string, options: any = {}): Promise<a
     }
     
     // Network or other fetch error
-    handleFailoverPrompt(`API Request failed (${error.message || "Network Error"}).`);
-    throw new Error("DEMO_MODE_ACTIVATED");
+    if (!options.noFailover) {
+      handleFailoverPrompt(`API Request failed (${error.message || "Network Error"}).`);
+      throw new Error("DEMO_MODE_ACTIVATED");
+    }
+    throw new Error(error.message || "Network Error");
   }
 }
 

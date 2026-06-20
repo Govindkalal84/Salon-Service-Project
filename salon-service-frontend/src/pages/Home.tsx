@@ -10,7 +10,7 @@ interface HomeProps {
 }
 
 export const Home: FC<HomeProps> = ({ onNavigate }) => {
-  const { demoMode } = useAuth();
+  const { demoMode, jwt } = useAuth();
   const [salons, setSalons] = useState<Salon[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
@@ -22,8 +22,8 @@ export const Home: FC<HomeProps> = ({ onNavigate }) => {
   // Load Categories
   const loadCategories = useCallback(async () => {
     try {
-      // Fetch categories. In mock mode, defaults will load.
-      const rawCategories = await apiRequest("/api/categories/salon/1").catch(() => []);
+      // Fetch categories. In mock mode, defaults will load. Pass noFailover to fail silently.
+      const rawCategories = await apiRequest("/api/categories/salon/1", { noFailover: true }).catch(() => []);
       
       const defaultCats: Category[] = [
         { id: 1, name: "Haircut & Styling", image: "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=150&q=80" },
@@ -46,7 +46,7 @@ export const Home: FC<HomeProps> = ({ onNavigate }) => {
       if (filterCity) {
         endpoint = `/api/salons/search?city=${encodeURIComponent(filterCity)}`;
       }
-      const data = await apiRequest(endpoint);
+      const data = await apiRequest(endpoint, { noFailover: true });
       setSalons(Array.isArray(data) ? data : []);
     } catch (e) {
       console.error("Failed to load salons", e);
@@ -58,7 +58,7 @@ export const Home: FC<HomeProps> = ({ onNavigate }) => {
   useEffect(() => {
     loadCategories();
     loadSalons();
-  }, [loadCategories, loadSalons, demoMode]);
+  }, [loadCategories, loadSalons, demoMode, jwt]);
 
   const handleSearch = () => {
     const filter = cityFilter || searchQuery;
