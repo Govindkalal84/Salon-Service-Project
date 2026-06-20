@@ -27,11 +27,11 @@ services:
     plan: free
     envVars:
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:mysql://yq9eAkzxxvnYuz5.root:ER5KAuU7ycb51i90@gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/salon
+        value: jdbc:mysql://gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/salon
       - key: SPRING_DATASOURCE_USERNAME
         value: yq9eAkzxxvnYuz5.root
       - key: SPRING_DATASOURCE_PASSWORD
-        value: eBuktKaVtCAw3Dhk
+        value: ER5KAuU7ycb51i90
       - key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
         value: https://eureka-4.onrender.com/eureka/
 
@@ -45,11 +45,11 @@ services:
     plan: free
     envVars:
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:mysql://yq9eAkzxxvnYuz5.root:ER5KAuU7ycb51i90@gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/salon
+        value: jdbc:mysql://gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/salon
       - key: SPRING_DATASOURCE_USERNAME
         value: yq9eAkzxxvnYuz5.root
       - key: SPRING_DATASOURCE_PASSWORD
-        value: eBuktKaVtCAw3Dhk
+        value: ER5KAuU7ycb51i90
       - key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
         value: https://eureka-4.onrender.com/eureka/
 
@@ -63,11 +63,11 @@ services:
     plan: free
     envVars:
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:mysql://yq9eAkzxxvnYuz5.root:ER5KAuU7ycb51i90@gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/salon
+        value: jdbc:mysql://gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/salon
       - key: SPRING_DATASOURCE_USERNAME
         value: yq9eAkzxxvnYuz5.root
       - key: SPRING_DATASOURCE_PASSWORD
-        value: eBuktKaVtCAw3Dhk
+        value: ER5KAuU7ycb51i90
       - key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
         value: https://eureka-4.onrender.com/eureka/
 
@@ -81,11 +81,11 @@ services:
     plan: free
     envVars:
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:mysql://yq9eAkzxxvnYuz5.root:ER5KAuU7ycb51i90@gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/salon
+        value: jdbc:mysql://gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/salon
       - key: SPRING_DATASOURCE_USERNAME
         value: yq9eAkzxxvnYuz5.root
       - key: SPRING_DATASOURCE_PASSWORD
-        value: eBuktKaVtCAw3Dhk
+        value: ER5KAuU7ycb51i90
       - key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
         value: https://eureka-4.onrender.com/eureka/
 
@@ -99,11 +99,11 @@ services:
     plan: free
     envVars:
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:mysql://yq9eAkzxxvnYuz5.root:ER5KAuU7ycb51i90@gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/salon
+        value: jdbc:mysql://gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/salon
       - key: SPRING_DATASOURCE_USERNAME
         value: yq9eAkzxxvnYuz5.root
       - key: SPRING_DATASOURCE_PASSWORD
-        value: eBuktKaVtCAw3Dhk
+        value: ER5KAuU7ycb51i90
       - key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
         value: https://eureka-4.onrender.com/eureka/
 
@@ -117,11 +117,11 @@ services:
     plan: free
     envVars:
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:mysql://yq9eAkzxxvnYuz5.root:ER5KAuU7ycb51i90@gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/salon
+        value: jdbc:mysql://gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/salon
       - key: SPRING_DATASOURCE_USERNAME
         value: yq9eAkzxxvnYuz5.root
       - key: SPRING_DATASOURCE_PASSWORD
-        value: eBuktKaVtCAw3Dhk
+        value: ER5KAuU7ycb51i90
       - key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
         value: https://eureka-4.onrender.com/eureka/
 
@@ -135,11 +135,11 @@ services:
     plan: free
     envVars:
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:mysql://yq9eAkzxxvnYuz5.root:ER5KAuU7ycb51i90@gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/salon
+        value: jdbc:mysql://gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/salon
       - key: SPRING_DATASOURCE_USERNAME
         value: yq9eAkzxxvnYuz5.root
       - key: SPRING_DATASOURCE_PASSWORD
-        value: eBuktKaVtCAw3Dhk
+        value: ER5KAuU7ycb51i90
       - key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
         value: https://eureka-4.onrender.com/eureka/
 
@@ -153,11 +153,11 @@ services:
     plan: free
     envVars:
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:mysql://yq9eAkzxxvnYuz5.root:ER5KAuU7ycb51i90@gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/salon
+        value: jdbc:mysql://gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/salon
       - key: SPRING_DATASOURCE_USERNAME
         value: yq9eAkzxxvnYuz5.root
       - key: SPRING_DATASOURCE_PASSWORD
-        value: eBuktKaVtCAw3Dhk
+        value: ER5KAuU7ycb51i90
       - key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
         value: https://eureka-4.onrender.com/eureka/
 

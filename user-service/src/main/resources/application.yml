@@ -7,9 +7,9 @@ spring:
     name: user-service
 
   datasource:
-    url: jdbc:mysql://yq9eAkzxxvnYuz5.root:ER5KAuU7ycb51i90@gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/salon
+    url: jdbc:mysql://gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/salon
     username: yq9eAkzxxvnYuz5.root
-    password: eBuktKaVtCAw3Dhk
+    password: ER5KAuU7ycb51i90
 
   jpa:
     hibernate:
