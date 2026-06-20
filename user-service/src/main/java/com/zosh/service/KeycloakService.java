@@ -24,13 +24,13 @@ KeycloakService {
     private  static final String TOKEN_URL=KEYCLOAK_BASE_URL+"/realms/salon-auth-test/protocol/openid-connect/token";
 
     private static final String CLIENT_ID="salon-app";
-    private static final String CLIENT_SECRET="YTjSTuR42Y6uQVX1T3HgM5AERfd2azAd";
+    private static final String CLIENT_SECRET="KehTI3vBOfxH0KZvVumUJ7iSh0CArWRP";
 
     private  static final String GRANT_TYPE="password";
     private  static final String scope="openid profile email";
     private  static  final  String username="admin";
-    private  static  final  String password="[.yYCauTRboG0YVrBoVb";
-    private  static final  String clientId="f99eec80-bf21-4405-8e4f-2b2fba5dde89";
+    private  static  final  String password="Govind@123";
+    private  static final  String clientId="2519b4a9-f3b1-465e-8247-cff93f89037e";
 
 
     private  final RestTemplate restTemplate;
