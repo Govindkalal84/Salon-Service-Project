@@ -116,6 +116,7 @@ export const OwnerDashboard: FC = () => {
           price: parseFloat(newServicePrice),
           duration: parseInt(newServiceDuration),
           categoryId: parseInt(newServiceCatId),
+          category: parseInt(newServiceCatId),
           salonId: salon.id
         }
       });
