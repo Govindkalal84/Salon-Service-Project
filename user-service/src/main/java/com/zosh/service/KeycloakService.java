@@ -46,12 +46,24 @@ KeycloakService {
         credential.setType("password");
         credential.setValue(signupDTO.getPassword());
 
+        String fullName = signupDTO.getFullName();
+        String firstName = signupDTO.getUsername();
+        String lastName = "";
+        if (fullName != null && !fullName.trim().isEmpty()) {
+            String[] parts = fullName.trim().split("\\s+", 2);
+            firstName = parts[0];
+            if (parts.length > 1) {
+                lastName = parts[1];
+            }
+        }
+
         UserRequest  userRequest=new UserRequest();
         userRequest.setUsername(signupDTO.getUsername());
         userRequest.setEmail(signupDTO.getEmail());
         userRequest.setEnabled(true);
         userRequest.setEmailVerified(true);
-        userRequest.setLastName(signupDTO.getFullName());
+        userRequest.setFirstName(firstName);
+        userRequest.setLastName(lastName);
         userRequest.getCredentials().add(credential);
 
 
