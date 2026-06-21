@@ -168,6 +168,8 @@ public class PaymentServiceImpl implements PaymentService {
                                   String paymentLinkId) throws RazorpayException {
         if (paymentOrder.getStatus().equals(PaymentOrderStatus.PENDING))
         {
+            if(paymentOrder.getPaymentMethod().equals(PaymentMethod.RAZORPAY))
+            {
                 if (paymentId != null && paymentId.startsWith("mock"))
                 {
                     bookingEventProducer.sentBookingUpdateEvent(paymentOrder);
@@ -198,7 +200,7 @@ public class PaymentServiceImpl implements PaymentService {
                     paymentOrderRepository.save(paymentOrder);
                     return true;
                 }
-                      return false;
+                return false;
             }
             else
             {
