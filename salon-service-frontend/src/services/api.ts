@@ -1,6 +1,6 @@
 import { mockApiRequest, isDemoModeActive, setDemoModeActive } from './mockApi';
 
-export const BASE_URL = "https://project-5-h6lp.onrender.com";
+export const BASE_URL = "https://project-6-be0t.onrender.com";
 
 export interface AuthState {
   user: any | null;
