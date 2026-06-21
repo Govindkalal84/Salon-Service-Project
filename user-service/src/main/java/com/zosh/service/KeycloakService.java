@@ -56,6 +56,9 @@ KeycloakService {
                 lastName = parts[1];
             }
         }
+        if (lastName.trim().isEmpty()) {
+            lastName = firstName;
+        }
 
         UserRequest  userRequest=new UserRequest();
         userRequest.setUsername(signupDTO.getUsername());
