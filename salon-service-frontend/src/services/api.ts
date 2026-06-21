@@ -104,7 +104,14 @@ export async function apiRequest(endpoint: string, options: any = {}): Promise<a
     
     // Parse JSON if response is not empty
     const text = await response.text();
-    return text ? JSON.parse(text) : null;
+    if (!text) return null;
+    
+    const parsed = JSON.parse(text);
+    // Detect Spring Boot wrapped exception response (GlobalExceptionHandler returning 200 OK)
+    if (parsed && typeof parsed === 'object' && parsed.error && typeof parsed.error === 'string' && parsed.error.startsWith('uri=') && parsed.message) {
+      throw new Error("HTTP_ERROR: " + parsed.message);
+    }
+    return parsed;
     
   } catch (error: any) {
     console.error(`API Request Error [${endpoint}]:`, error);
