@@ -21,6 +21,18 @@ export const OwnerDashboard: FC = () => {
   const [regState, setRegState] = useState('Maharashtra');
   const [regPhone, setRegPhone] = useState('');
   const [regEmail, setRegEmail] = useState('');
+  const [regImage, setRegImage] = useState('');
+
+  // Salon Edit Form States
+  const [editName, setEditName] = useState('');
+  const [editAddress, setEditAddress] = useState('');
+  const [editCity, setEditCity] = useState('Mumbai');
+  const [editState, setEditState] = useState('Maharashtra');
+  const [editPhone, setEditPhone] = useState('');
+  const [editEmail, setEditEmail] = useState('');
+  const [editImage, setEditImage] = useState('');
+  const [editOpenTime, setEditOpenTime] = useState('09:00');
+  const [editCloseTime, setEditCloseTime] = useState('21:00');
 
   // Catalog Add Form States
   const [newServiceName, setNewServiceName] = useState('');
@@ -40,6 +52,15 @@ export const OwnerDashboard: FC = () => {
       const salonData = await apiRequest("/api/salons/owner");
       if (salonData) {
         setSalon(salonData);
+        setEditName(salonData.name || '');
+        setEditAddress(salonData.address || '');
+        setEditCity(salonData.city || 'Mumbai');
+        setEditState(salonData.state || 'Maharashtra');
+        setEditPhone(salonData.phoneNumber || '');
+        setEditEmail(salonData.email || '');
+        setEditImage((salonData.images && salonData.images[0]) || '');
+        setEditOpenTime(salonData.openTime || '09:00');
+        setEditCloseTime(salonData.closeTime || '21:00');
         
         // Load report
         const rpt = await apiRequest("/api/bookings/report");
@@ -82,13 +103,42 @@ export const OwnerDashboard: FC = () => {
           city: regCity,
           state: regState,
           phoneNumber: regPhone,
-          email: regEmail
+          email: regEmail,
+          images: regImage ? [regImage] : []
         }
       });
       showToast("Salon profile registered successfully!", "success");
       loadOwnerData();
     } catch (e: any) {
       showToast(e.message || "Failed to register salon profile", "danger");
+    }
+  };
+
+  // Update Salon Profile
+  const handleUpdateSalon = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!salon) return;
+    try {
+      await apiRequest(`/api/salons/${salon.id}`, {
+        method: "PUT",
+        body: {
+          id: salon.id,
+          name: editName,
+          address: editAddress,
+          city: editCity,
+          state: editState,
+          phoneNumber: editPhone,
+          email: editEmail,
+          images: editImage ? [editImage] : [],
+          ownerId: salon.ownerId,
+          openTime: editOpenTime,
+          closeTime: editCloseTime
+        }
+      });
+      showToast("Salon profile updated successfully!", "success");
+      loadOwnerData();
+    } catch (e: any) {
+      showToast(e.message || "Failed to update salon profile", "danger");
     }
   };
 
@@ -268,6 +318,16 @@ export const OwnerDashboard: FC = () => {
                 placeholder="salon@aura.com"
                 value={regEmail}
                 onChange={(e) => setRegEmail(e.target.value)}
+              />
+            </div>
+            <div className="form-group">
+              <label>Salon Cover Image URL</label>
+              <input
+                type="url"
+                className="form-control"
+                placeholder="https://images.unsplash.com/photo-..."
+                value={regImage}
+                onChange={(e) => setRegImage(e.target.value)}
               />
             </div>
             <button type="submit" className="btn btn-gold w-full mt-4">
@@ -550,7 +610,14 @@ export const OwnerDashboard: FC = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
               {categories.map(c => (
                 <div key={c.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-dark)', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--border-subtle)', fontSize: '13px' }}>
-                  <span>{c.name}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <img 
+                      src={c.image || "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=80"} 
+                      alt={c.name} 
+                      style={{ width: '32px', height: '32px', objectFit: 'cover', borderRadius: '4px', border: '1px solid var(--border-subtle)' }} 
+                    />
+                    <span>{c.name}</span>
+                  </div>
                   <button
                     onClick={() => handleDeleteCategory(c.id)}
                     style={{ background: 'none', border: 'none', color: 'var(--color-danger)', cursor: 'pointer' }}
@@ -587,6 +654,114 @@ export const OwnerDashboard: FC = () => {
               <button type="submit" className="btn btn-outline btn-gold w-full mt-2" style={{ display: 'flex', gap: '6px' }}>
                 <Plus size={16} />
                 <span>Create Category</span>
+              </button>
+            </form>
+          </div>
+
+          {/* Salon Settings Editor */}
+          <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-glass)', borderRadius: 'var(--border-radius-lg)', padding: '24px' }}>
+            <h4 className="playfair" style={{ fontSize: '20px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Layers size={18} className="gold-text" />
+              <span>Salon Profile Settings</span>
+            </h4>
+            
+            <form onSubmit={handleUpdateSalon} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label>Salon / Spa Name</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  required
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                />
+              </div>
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label>Physical Address</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  required
+                  value={editAddress}
+                  onChange={(e) => setEditAddress(e.target.value)}
+                />
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label>City</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    required
+                    value={editCity}
+                    onChange={(e) => setEditCity(e.target.value)}
+                  />
+                </div>
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label>State</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    required
+                    value={editState}
+                    onChange={(e) => setEditState(e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label>Contact Phone Number</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  required
+                  value={editPhone}
+                  onChange={(e) => setEditPhone(e.target.value)}
+                />
+              </div>
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label>Concierge Email</label>
+                <input
+                  type="email"
+                  className="form-control"
+                  required
+                  value={editEmail}
+                  onChange={(e) => setEditEmail(e.target.value)}
+                />
+              </div>
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label>Salon Cover Image URL</label>
+                <input
+                  type="url"
+                  className="form-control"
+                  value={editImage}
+                  onChange={(e) => setEditImage(e.target.value)}
+                  placeholder="https://images.unsplash.com/..."
+                />
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label>Open Time</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="09:00"
+                    value={editOpenTime}
+                    onChange={(e) => setEditOpenTime(e.target.value)}
+                  />
+                </div>
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label>Close Time</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="21:00"
+                    value={editCloseTime}
+                    onChange={(e) => setEditCloseTime(e.target.value)}
+                  />
+                </div>
+              </div>
+              <button type="submit" className="btn btn-gold w-full mt-2">
+                Save Profile Changes
               </button>
             </form>
           </div>

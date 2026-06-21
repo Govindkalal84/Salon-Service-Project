@@ -45,7 +45,7 @@ export const UPIQrPayment: React.FC<UPIQrPaymentProps> = ({
     setVerifying(true);
     try {
       // Simulate verification api call
-      const verified = await apiRequest(`/api/payments/proceed?paymentLinkId=${paymentLinkId}`, {
+      const verified = await apiRequest(`/api/payments/proceed?paymentLinkId=${paymentLinkId}&paymentId=mock`, {
         method: "PATCH"
       });
       

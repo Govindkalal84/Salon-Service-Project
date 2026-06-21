@@ -200,7 +200,7 @@ export const SalonDetail: FC<SalonDetailProps> = ({ salonId, onNavigate }) => {
   return (
     <div>
       <div className="salon-banner">
-        <img src={salon.images[0]} alt={salon.name} />
+        <img src={salon.images && salon.images.length > 0 ? salon.images[0] : "https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=1200"} alt={salon.name} />
         <div className="salon-banner-overlay">
           <div className="salon-header-info">
             <span className="user-role-badge">Premium Care</span>

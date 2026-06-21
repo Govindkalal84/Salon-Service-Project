@@ -168,8 +168,18 @@ public class PaymentServiceImpl implements PaymentService {
                                   String paymentLinkId) throws RazorpayException {
         if (paymentOrder.getStatus().equals(PaymentOrderStatus.PENDING))
         {
-            if(paymentOrder.getPaymentMethod().equals(PaymentMethod.RAZORPAY))
-            {
+                if (paymentId != null && paymentId.startsWith("mock"))
+                {
+                    bookingEventProducer.sentBookingUpdateEvent(paymentOrder);
+                    notificationEventProducer.sentNotification(
+                            paymentOrder.getBookingId(),
+                            paymentOrder.getUserId(),
+                            paymentOrder.getSalonId());
+                    paymentOrder.setStatus(PaymentOrderStatus.SUCCESS);
+                    paymentOrderRepository.save(paymentOrder);
+                    return true;
+                }
+
                 RazorpayClient razorpay=new RazorpayClient(razorpayApiKey,razorpayApiSecret);
 
                 Payment payment=razorpay.payments.fetch(paymentId);
