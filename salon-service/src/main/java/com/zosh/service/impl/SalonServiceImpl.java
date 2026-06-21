@@ -8,6 +8,7 @@ import com.zosh.service.SalonService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -27,8 +28,8 @@ public class SalonServiceImpl  implements SalonService {
         salon.setCity(req.getCity());
         salon.setImages(req.getImages());
         salon.setOwnerId(user.getId());
-        salon.setOpenTime(req.getOpenTime());
-        salon.setCloseTime(req.getCloseTime());
+        salon.setOpenTime(req.getOpenTime() != null ? req.getOpenTime() : LocalTime.of(9, 0));
+        salon.setCloseTime(req.getCloseTime() != null ? req.getCloseTime() : LocalTime.of(20, 0));
         salon.setPhoneNumber(req.getPhoneNumber());
         return salonRepository.save(salon);
     }
@@ -49,8 +50,12 @@ public class SalonServiceImpl  implements SalonService {
             existingSalon.setAddress(salon.getAddress());
             existingSalon.setEmail(salon.getEmail());
             existingSalon.setImages(salon.getImages());
-            existingSalon.setOpenTime(salon.getOpenTime());
-            existingSalon.setCloseTime(salon.getCloseTime());
+            if (salon.getOpenTime() != null) {
+                existingSalon.setOpenTime(salon.getOpenTime());
+            }
+            if (salon.getCloseTime() != null) {
+                existingSalon.setCloseTime(salon.getCloseTime());
+            }
             existingSalon.setOwnerId(user.getId()); 
             existingSalon.setPhoneNumber(salon.getPhoneNumber());
 
