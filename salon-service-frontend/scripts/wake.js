@@ -6,6 +6,7 @@ const urls = [
   'https://project-2-ltzu.onrender.com/actuator/health',
   'https://project-3-a32z.onrender.com/actuator/health',
   'https://project-gikt.onrender.com/actuator/health',
+  'https://project-5-h6lp.onrender.com/actuator/health',
   'https://project-6-be0t.onrender.com/actuator/health',
   'https://project-7-wxtf.onrender.com/actuator/health',
   'https://project-8-mhyw.onrender.com/actuator/health',
