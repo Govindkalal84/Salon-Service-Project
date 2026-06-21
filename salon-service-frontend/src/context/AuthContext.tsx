@@ -127,12 +127,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       let endpoint = `/api/notifications/user/${userProfile.id}`;
       if (userProfile.role === 'SALON_OWNER') {
         // Find owner's salon first
-        const salon = await apiRequest("/api/salons/owner");
+        const salon = await apiRequest("/api/salons/owner", { noFailover: true });
         if (salon) {
           endpoint = `/api/notifications/salon-owner/salon/${salon.id}`;
         }
       }
-      const data = await apiRequest(endpoint);
+      const data = await apiRequest(endpoint, { noFailover: true });
       setNotifications(Array.isArray(data) ? data : []);
     } catch (e: any) {
       console.error("Notifications fetch failed", e);
@@ -144,7 +144,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const markNotificationRead = async (id: number) => {
     try {
-      await apiRequest(`/api/notifications/${id}/read`, { method: "PUT" });
+      await apiRequest(`/api/notifications/${id}/read`, { method: "PUT", noFailover: true });
       setNotifications(prev => 
         prev.map(n => n.id === id ? { ...n, isRead: true } : n)
       );
