@@ -1,0 +1,29 @@
+name: Wake All Render Services
+
+on:
+  workflow_dispatch:
+
+jobs:
+  wake-up:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Curl all microservices simultaneously
+        run: |
+          urls=(
+              "https://project-10-mwki.onrender.com"
+              "https://eureka-4.onrender.com"
+              "https://project-8-mhyw.onrender.com"
+              "https://project-7-wxtf.onrender.com"
+              "https://project-6-be0t.onrender.com"
+              "https://project-5-h6lp.onrender.com"
+              "https://project-3-a32z.onrender.com"
+              "https://project-1-md39.onrender.com"
+              "https://project-2-ltzu.onrender.com"
+              "https://project-gikt.onrender.com"
+          )
+          for url in "${urls[@]}"; do
+            echo "Sending wake signal to $url..."
+            curl -s --max-time 90 "$url" > /dev/null &
+          done
+          wait
+          echo "All services signaled to start!"
