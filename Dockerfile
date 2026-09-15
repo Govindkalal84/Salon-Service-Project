@@ -1,5 +1,5 @@
-# Stage 1: Build the Maven application
-FROM maven:3.9-eclipse-temurin-17 AS build
+# Stage 1: Build the Maven application with Java 21
+FROM maven:3.9-eclipse-temurin-21 AS build
 WORKDIR /app
 
 # Copy root pom and module folders
@@ -22,8 +22,8 @@ ENV SERVICE_DIR=${SERVICE_NAME}
 # Build only the requested module and its dependencies
 RUN mvn clean package -pl ${SERVICE_DIR} -am -DskipTests
 
-# Stage 2: Runtime image
-FROM eclipse-temurin:17-jre-alpine
+# Stage 2: Runtime image with Java 21
+FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
 # Build argument with fallback default
