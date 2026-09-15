@@ -11,11 +11,13 @@ spring:
     password: ER5KAuU7ycb51i90
 
   rabbitmq:
-    host: armadillo.rmq.cloudamqp.com
+    host: frog.lmq.cloudamqp.com
     port: 5672
-    username: avhqyyix
-    password: ghDX0t0EkLkCdj0-wcDgtm2Honpt9sDk
-    virtual-host: avhqyyix
+    username: 	lvefmwnj
+    password: 8EEJU4SYUV69SERKgCFdSEMB58ABPBXX
+    virtual-host: 	lvefmwnj
+    ssl:
+      enabled: true
 
   jpa:
     hibernate:
