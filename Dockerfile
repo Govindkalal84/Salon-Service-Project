@@ -15,8 +15,8 @@ COPY salon-service ./salon-service
 COPY service-offering ./service-offering
 COPY user-service ./user-service
 
-# Build argument to specify which microservice to build
-ARG SERVICE_NAME
+# Build argument with fallback default
+ARG SERVICE_NAME=booking-service
 ENV SERVICE_DIR=${SERVICE_NAME}
 
 # Build only the requested module and its dependencies
@@ -26,7 +26,8 @@ RUN mvn clean package -pl ${SERVICE_DIR} -am -DskipTests
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
-ARG SERVICE_NAME
+# Build argument with fallback default
+ARG SERVICE_NAME=booking-service
 ENV SERVICE_DIR=${SERVICE_NAME}
 
 # Copy the generated JAR file from the build stage
