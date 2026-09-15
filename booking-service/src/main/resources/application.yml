@@ -6,16 +6,16 @@ spring:
     name: booking-service
 
   datasource:
-    url: jdbc:mysql://gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/salon
-    username: yq9eAkzxxvnYuz5.root
-    password: ER5KAuU7ycb51i90
+    url: "jdbc:mysql://gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/salon?sslMode=VERIFY_IDENTITY"
+    username: "yq9eAkzxxvnYuz5.root"
+    password: "ER5KAuU7ycb51i90"
 
   rabbitmq:
-    host: frog.lmq.cloudamqp.com
-    port: 5672
-    username: 	lvefmwnj
-    password: 8EEJU4SYUV69SERKgCFdSEMB58ABPBXX
-    virtual-host: 	lvefmwnj
+    host: "frog.lmq.cloudamqp.com"
+    port: 5671
+    username: "lvefmwnj"
+    password: "8EEJU4SYUV69SERKgCFdSEMB58ABPBXX"
+    virtual-host: "lvefmwnj"
     ssl:
       enabled: true
 
@@ -32,4 +32,4 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: https://eureka-4.onrender.com/eureka/
+      defaultZone: "https://eureka-4.onrender.com/eureka/"
