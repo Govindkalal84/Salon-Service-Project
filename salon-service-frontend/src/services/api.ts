@@ -1,6 +1,6 @@
 import { mockApiRequest, isDemoModeActive, setDemoModeActive } from './mockApi';
 
-export const BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://salon-service-project-spmu.onrender.com";
+export const BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://salon-service-project-ekud.onrender.com";
 
 export interface AuthState {
   user: any | null;
