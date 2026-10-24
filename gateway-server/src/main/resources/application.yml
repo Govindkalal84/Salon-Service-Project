@@ -34,7 +34,7 @@ spring:
 
         # SALON SERVICE
         - id: salon-service
-          uri: ${SALON_SERVICE_URL:lb://SALON-SERVICE}
+          uri: ${SALON_SERVICE_URL:https://salon-service-project-z307.onrender.com}
           predicates:
             - Path=/api/salons,/api/salons/**
 

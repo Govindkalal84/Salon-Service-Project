@@ -4,7 +4,7 @@ export const USER_SERVICE_URL = import.meta.env.VITE_USER_SERVICE_URL || "https:
 export const CATEGORY_SERVICE_URL = import.meta.env.VITE_CATEGORY_SERVICE_URL || "https://salon-service-project-wpp6.onrender.com";
 export const BOOKING_SERVICE_URL = import.meta.env.VITE_BOOKING_SERVICE_URL || "https://salon-service-project-yd8g.onrender.com";
 export const GATEWAY_URL = import.meta.env.VITE_API_BASE_URL || "https://salon-service-project-ekud.onrender.com";
-export const SALON_SERVICE_URL = import.meta.env.VITE_SALON_SERVICE_URL || GATEWAY_URL;
+export const SALON_SERVICE_URL = import.meta.env.VITE_SALON_SERVICE_URL || "https://salon-service-project-z307.onrender.com";
 
 export const BASE_URL = GATEWAY_URL;
 
