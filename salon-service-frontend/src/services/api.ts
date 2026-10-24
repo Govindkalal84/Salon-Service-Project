@@ -1,6 +1,28 @@
 import { mockApiRequest, isDemoModeActive, setDemoModeActive } from './mockApi';
 
-export const BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://salon-service-project-ekud.onrender.com";
+export const USER_SERVICE_URL = import.meta.env.VITE_USER_SERVICE_URL || "https://salon-service-project-spmu.onrender.com";
+export const CATEGORY_SERVICE_URL = import.meta.env.VITE_CATEGORY_SERVICE_URL || "https://salon-service-project-wpp6.onrender.com";
+export const BOOKING_SERVICE_URL = import.meta.env.VITE_BOOKING_SERVICE_URL || "https://salon-service-project-yd8g.onrender.com";
+export const GATEWAY_URL = import.meta.env.VITE_API_BASE_URL || "https://salon-service-project-ekud.onrender.com";
+export const SALON_SERVICE_URL = import.meta.env.VITE_SALON_SERVICE_URL || GATEWAY_URL;
+
+export const BASE_URL = GATEWAY_URL;
+
+export function getBaseUrl(endpoint: string): string {
+  if (endpoint.startsWith('/auth') || endpoint.startsWith('/api/users') || endpoint.startsWith('/users')) {
+    return USER_SERVICE_URL;
+  }
+  if (endpoint.startsWith('/api/categories')) {
+    return CATEGORY_SERVICE_URL;
+  }
+  if (endpoint.startsWith('/api/bookings')) {
+    return BOOKING_SERVICE_URL;
+  }
+  if (endpoint.startsWith('/api/salons')) {
+    return SALON_SERVICE_URL;
+  }
+  return GATEWAY_URL;
+}
 
 export interface AuthState {
   user: any | null;
@@ -39,7 +61,8 @@ export async function apiRequest(endpoint: string, options: any = {}): Promise<a
     return mockApiRequest(endpoint, options);
   }
   
-  const url = `${BASE_URL}${endpoint}`;
+  const baseUrl = getBaseUrl(endpoint);
+  const url = `${baseUrl}${endpoint}`;
   
   // Set headers
   if (!options.headers) {
@@ -136,7 +159,7 @@ export async function apiRequest(endpoint: string, options: any = {}): Promise<a
 // Token Refresh Handler
 async function attemptTokenRefresh(refreshToken: string): Promise<boolean> {
   try {
-    const res = await fetch(`${BASE_URL}/auth/access-token/refresh-token/${refreshToken}`);
+    const res = await fetch(`${USER_SERVICE_URL}/auth/access-token/refresh-token/${refreshToken}`);
     if (res.ok) {
       const data = await res.json();
       localStorage.setItem("jwt", data.jwt);
