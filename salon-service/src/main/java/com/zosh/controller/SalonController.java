@@ -25,12 +25,19 @@ public class SalonController {
     public ResponseEntity<SalonDTO> createSalon(@RequestBody SalonDTO salonDTO,
                                                 @RequestHeader("Authorization") String jwt) throws Exception {
 
-        UserDTO userDTO = userFeignClient.getUserProfile(jwt).getBody();
+        UserDTO userDTO = null;
+        try {
+            userDTO = userFeignClient.getUserProfile(jwt).getBody();
+        } catch (Exception e) {
+            System.err.println("Feign failed to get user profile: " + e.getMessage());
+        }
 
+        if (userDTO == null || userDTO.getId() == null) {
+            throw new Exception("Unable to retrieve user profile. Please try logging in again.");
+        }
 
-        Salon salon=salonService.createSalon(salonDTO,userDTO);
-        SalonDTO salonDTO1= SalonMapper.mapToDTO(salon);
-
+        Salon salon = salonService.createSalon(salonDTO, userDTO);
+        SalonDTO salonDTO1 = SalonMapper.mapToDTO(salon);
 
         return ResponseEntity.ok(salonDTO1);
 
@@ -103,19 +110,24 @@ public class SalonController {
     }
     @GetMapping("/owner")
     public ResponseEntity<SalonDTO> getSalonByOwnerId(
-
-
             @RequestHeader("Authorization")String jwt
-
     ) throws Exception {
 
-        UserDTO userDTO =userFeignClient.getUserProfile(jwt).getBody();
-
-        if (userDTO==null){
-            throw new Exception("user not found from jwt...");
+        UserDTO userDTO = null;
+        try {
+            userDTO = userFeignClient.getUserProfile(jwt).getBody();
+        } catch (Exception e) {
+            System.err.println("Feign failed to get user profile: " + e.getMessage());
         }
 
-        Salon salon=salonService.getSalonByOwnerId(userDTO.getId());
+        if (userDTO == null || userDTO.getId() == null){
+            return ResponseEntity.ok(null);
+        }
+
+        Salon salon = salonService.getSalonByOwnerId(userDTO.getId());
+        if (salon == null) {
+            return ResponseEntity.ok(null);
+        }
         SalonDTO salonDTO = SalonMapper.mapToDTO(salon);
 
         return ResponseEntity.ok(salonDTO);

@@ -49,7 +49,7 @@ export const OwnerDashboard: FC = () => {
     try {
       setLoading(true);
       // Fetch salon details for this owner
-      const salonData = await apiRequest("/api/salons/owner");
+      const salonData = await apiRequest("/api/salons/owner", { noFailover: true }).catch(() => null);
       if (salonData) {
         setSalon(salonData);
         setEditName(salonData.name || '');
