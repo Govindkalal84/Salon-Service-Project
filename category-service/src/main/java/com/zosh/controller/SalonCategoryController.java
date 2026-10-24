@@ -12,6 +12,7 @@ import java.util.Set;
 
 
 
+@CrossOrigin(origins = {"https://salon-service-project.vercel.app", "http://localhost:5173", "http://localhost:3000", "http://localhost:5170"})
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/categories/salon-owner")

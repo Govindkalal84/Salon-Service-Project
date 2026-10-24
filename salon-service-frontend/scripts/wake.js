@@ -3,6 +3,7 @@ import http from 'https';
 const urls = [
   'https://eureka-4.onrender.com/eureka/',
   'https://salon-service-project-spmu.onrender.com/',
+  'https://salon-service-project-yd8g.onrender.com/',
   'https://project-1-md39.onrender.com/actuator/health',
   'https://project-2-ltzu.onrender.com/actuator/health',
   'https://project-3-a32z.onrender.com/actuator/health',
