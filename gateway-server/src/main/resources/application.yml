@@ -22,24 +22,21 @@ spring:
       routes:
         # BOOKING SERVICE
         - id: booking-service
-          uri: lb://BOOKING-SERVICE
+          uri: ${BOOKING_SERVICE_URL:https://salon-service-project-yd8g.onrender.com}
           predicates:
             - Path=/api/bookings/**
 
         # USER SERVICE
         - id: auth-service
-          uri: lb://USER-SERVICE
+          uri: ${USER_SERVICE_URL:https://salon-service-project-spmu.onrender.com}
           predicates:
-            - Path=/api/users/**, /api/admin/users/**, /api/users/**, /users/**,/auth/**
+            - Path=/api/users/**, /api/admin/users/**, /users/**, /auth/**
 
         # SALON SERVICE
         - id: salon-service
-          uri: lb://SALON-SERVICE
+          uri: ${SALON_SERVICE_URL:lb://SALON-SERVICE}
           predicates:
             - Path=/api/salons,/api/salons/**
-
-            # AUTH APIs ✅ ADD THIS
-
 
         # SERVICE OFFERING
         - id: service-offering
@@ -49,7 +46,7 @@ spring:
 
         # CATEGORY SERVICE
         - id: category-service
-          uri: lb://CATEGORY-SERVICE
+          uri: ${CATEGORY_SERVICE_URL:https://salon-service-project-wpp6.onrender.com}
           predicates:
             - Path=/api/categories/**
 

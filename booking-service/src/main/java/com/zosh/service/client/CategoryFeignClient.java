@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient("CATEGORY-SERVICE")
+@FeignClient(name = "CATEGORY-SERVICE", url = "${CATEGORY_SERVICE_URL:https://salon-service-project-wpp6.onrender.com}")
 public interface CategoryFeignClient {
 //
 //    @GetMapping("/api/categories/{id}")
