@@ -2,7 +2,7 @@ import { useState, useEffect, type FC, type FormEvent } from 'react';
 import { apiRequest } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import type { User, Salon } from '../services/mockApi';
-import { Shield, Trash2, Building, Users, Plus, Scissors, MapPin, Phone, Mail, Image as ImageIcon } from 'lucide-react';
+import { Shield, Trash2, Building, Users, Plus, MapPin } from 'lucide-react';
 
 export const AdminDashboard: FC = () => {
   const { showToast } = useAuth();
