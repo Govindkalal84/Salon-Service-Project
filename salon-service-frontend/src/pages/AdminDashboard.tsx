@@ -87,15 +87,25 @@ export const AdminDashboard: FC = () => {
     }
   };
 
-  // Delete User
+  // Delete User & Associated Salons
   const handleDeleteUser = async (userId: number, fullName: string) => {
-    const confirmDelete = window.confirm(`Are you sure you want to delete user "${fullName}"? This cannot be undone.`);
+    const confirmDelete = window.confirm(`Are you sure you want to delete owner "${fullName}" (ID: ${userId})? This will also remove any salons listed by this owner.`);
     if (!confirmDelete) return;
 
     try {
+      // Find and delete any salons owned by this user
+      const allSalons = await apiRequest("/api/salons").catch(() => []);
+      if (Array.isArray(allSalons)) {
+        const ownerSalons = allSalons.filter((s: any) => s.ownerId === userId);
+        for (const s of ownerSalons) {
+          await apiRequest(`/api/salons/${s.id}`, { method: "DELETE" }).catch(() => {});
+        }
+      }
+
       await apiRequest(`/api/users/${userId}`, { method: "DELETE" });
-      showToast(`User "${fullName}" deleted from directory`, "info");
+      showToast(`Owner "${fullName}" and their salon listings have been completely deleted!`, "info");
       fetchUsersList();
+      fetchSalonsList();
     } catch (e: any) {
       showToast(e.message || "Failed to delete user", "danger");
     }
