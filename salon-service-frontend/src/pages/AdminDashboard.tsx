@@ -61,7 +61,7 @@ export const AdminDashboard: FC = () => {
     if (!confirmDelete) return;
 
     try {
-      await apiRequest(`/api/salons/${salonId}`, { method: "DELETE" });
+      await apiRequest(`/api/salons/${salonId}`, { method: "DELETE", noFailover: true });
       showToast(`Salon "${salonName}" deleted successfully!`, "info");
       fetchSalonsList();
     } catch (e: any) {

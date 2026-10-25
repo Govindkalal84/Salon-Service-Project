@@ -148,7 +148,7 @@ export const OwnerDashboard: FC = () => {
     const confirmDelete = window.confirm(`Are you sure you want to delete "${salon.name}"? You will be able to register a fresh salon profile with different images and categories.`);
     if (!confirmDelete) return;
     try {
-      await apiRequest(`/api/salons/${salon.id}`, { method: "DELETE" });
+      await apiRequest(`/api/salons/${salon.id}`, { method: "DELETE", noFailover: true });
       showToast("Salon profile deleted successfully!", "info");
       setSalon(null);
       loadOwnerData();
