@@ -19,5 +19,6 @@ Salon createSalon(SalonDTO salon, UserDTO user);
 
  List<Salon> searchSalonByCity(String city);
 
+ void deleteSalon(Long salonId) throws Exception;
 
 }

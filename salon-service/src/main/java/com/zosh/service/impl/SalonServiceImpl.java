@@ -90,4 +90,12 @@ public class SalonServiceImpl  implements SalonService {
     public List<Salon> searchSalonByCity(String city) {
         return salonRepository.searchSalons(city);
     }
+
+    @Override
+    public void deleteSalon(Long salonId) throws Exception {
+        Salon salon = salonRepository.findById(salonId).orElse(null);
+        if (salon != null) {
+            salonRepository.delete(salon);
+        }
+    }
 }

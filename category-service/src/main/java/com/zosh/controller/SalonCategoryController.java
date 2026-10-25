@@ -27,30 +27,48 @@ public class SalonCategoryController {
             @RequestBody Category category,
             @RequestHeader("Authorization") String jwt
     ) throws Exception {
-        SalonDTO salonDTO=salonFeignClient.getSalonByOwnerId(jwt).getBody();
+        SalonDTO salonDTO = null;
+        try {
+            salonDTO = salonFeignClient.getSalonByOwnerId(jwt).getBody();
+        } catch (Exception e) {
+            System.err.println("Feign failed to get salon: " + e.getMessage());
+        }
 
-        Category saveCategory=categoryService.saveCategory(category,salonDTO);
+        if (salonDTO == null || salonDTO.getId() == null) {
+            throw new Exception("Salon profile not found for this owner. Please register your salon first.");
+        }
 
+        Category saveCategory = categoryService.saveCategory(category, salonDTO);
         return ResponseEntity.ok(saveCategory);
     }
+
     @GetMapping("/salon/{salonId}/category/{id}")
     public ResponseEntity<Category> getCategoriesByIdAndSalon(
             @PathVariable Long id,
             @PathVariable Long salonId
 
     ) throws Exception {
-        Category category=categoryService.findByIdAndSalonId(id,salonId);
+        Category category = categoryService.findByIdAndSalonId(id, salonId);
         return ResponseEntity.ok(category);
     }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteCategory(
             @PathVariable Long id,
             @RequestHeader("Authorization") String jwt
     ) throws Exception {
-        SalonDTO salonDTO=salonFeignClient.getSalonByOwnerId(jwt).getBody();
+        SalonDTO salonDTO = null;
+        try {
+            salonDTO = salonFeignClient.getSalonByOwnerId(jwt).getBody();
+        } catch (Exception e) {
+            System.err.println("Feign failed to get salon: " + e.getMessage());
+        }
+
+        if (salonDTO == null || salonDTO.getId() == null) {
+            throw new Exception("Salon profile not found for this owner.");
+        }
 
         categoryService.deleteCategoryById(id, salonDTO.getId());
-
         return ResponseEntity.ok("category deleted successfully");
     }
 }

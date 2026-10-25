@@ -63,8 +63,8 @@ function MainAppContent() {
       if (!user) {
         showToast("Authentication required", "warning");
         navigate('auth');
-      } else if (user.role !== 'ADMIN') {
-        showToast("Access Denied. Admin permissions required.", "danger");
+      } else if (user.role !== 'ADMIN' && user.role !== 'SALON_OWNER') {
+        showToast("Access Denied. Owner or Admin permissions required.", "danger");
         navigate('home');
       }
     }

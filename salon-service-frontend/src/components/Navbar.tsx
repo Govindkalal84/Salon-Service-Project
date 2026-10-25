@@ -45,12 +45,20 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, activePage, onToggle
             </button>
           )}
           {user?.role === 'SALON_OWNER' && (
-            <button
-              className={`nav-link-btn nav-link ${activePage === 'owner-dashboard' ? 'active' : ''}`}
-              onClick={() => handleNav('owner-dashboard')}
-            >
-              Owner Dashboard
-            </button>
+            <>
+              <button
+                className={`nav-link-btn nav-link ${activePage === 'owner-dashboard' ? 'active' : ''}`}
+                onClick={() => handleNav('owner-dashboard')}
+              >
+                Owner Dashboard
+              </button>
+              <button
+                className={`nav-link-btn nav-link ${activePage === 'admin-dashboard' ? 'active' : ''}`}
+                onClick={() => handleNav('admin-dashboard')}
+              >
+                Salons Directory
+              </button>
+            </>
           )}
           {user?.role === 'ADMIN' && (
             <>

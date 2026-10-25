@@ -142,6 +142,21 @@ export const OwnerDashboard: FC = () => {
     }
   };
 
+  // Delete Salon Profile
+  const handleDeleteSalon = async () => {
+    if (!salon) return;
+    const confirmDelete = window.confirm(`Are you sure you want to delete "${salon.name}"? You will be able to register a fresh salon profile with different images and categories.`);
+    if (!confirmDelete) return;
+    try {
+      await apiRequest(`/api/salons/${salon.id}`, { method: "DELETE" });
+      showToast("Salon profile deleted successfully!", "info");
+      setSalon(null);
+      loadOwnerData();
+    } catch (e: any) {
+      showToast(e.message || "Failed to delete salon profile", "danger");
+    }
+  };
+
   // Booking action: CONFIRM or CANCEL
   const handleUpdateBookingStatus = async (bookingId: number, status: 'CONFIRMED' | 'CANCELLED') => {
     try {
@@ -329,6 +344,26 @@ export const OwnerDashboard: FC = () => {
                 value={regImage}
                 onChange={(e) => setRegImage(e.target.value)}
               />
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: '8px' }}>
+                <span style={{ fontSize: '11px', color: 'var(--text-muted)', width: '100%' }}>Choose an aesthetic photo preset:</span>
+                {[
+                  { label: "✨ Luxury Spa", url: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80" },
+                  { label: "✂️ Modern Hair Studio", url: "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1200&q=80" },
+                  { label: "💈 Barber & Lounge", url: "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=1200&q=80" },
+                  { label: "🌿 Ayurvedic Wellness", url: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=1200&q=80" },
+                  { label: "💄 Glamour Parlour", url: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1200&q=80" }
+                ].map((preset, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    className="btn btn-outline"
+                    onClick={() => setRegImage(preset.url)}
+                    style={{ fontSize: '11px', padding: '3px 8px', textTransform: 'none' }}
+                  >
+                    {preset.label}
+                  </button>
+                ))}
+              </div>
             </div>
             <button type="submit" className="btn btn-gold w-full mt-4">
               Register Salon Profile
@@ -650,6 +685,30 @@ export const OwnerDashboard: FC = () => {
                   value={newCatImage}
                   onChange={(e) => setNewCatImage(e.target.value)}
                 />
+                <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap', marginTop: '8px' }}>
+                  <span style={{ fontSize: '11px', color: 'var(--text-muted)', width: '100%' }}>Quick Category Templates:</span>
+                  {[
+                    { name: "Haircut & Styling", image: "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=600&q=80" },
+                    { name: "Facials & Glow", image: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=600&q=80" },
+                    { name: "Nails & Pedicure", image: "https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=600&q=80" },
+                    { name: "Massage & Body Spa", image: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=600&q=80" },
+                    { name: "Beard & Grooming", image: "https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=600&q=80" },
+                    { name: "Bridal Special", image: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=600&q=80" }
+                  ].map((preset, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      className="btn btn-outline"
+                      onClick={() => {
+                        setNewCatName(preset.name);
+                        setNewCatImage(preset.image);
+                      }}
+                      style={{ fontSize: '10px', padding: '3px 8px', textTransform: 'none' }}
+                    >
+                      {preset.name}
+                    </button>
+                  ))}
+                </div>
               </div>
               <button type="submit" className="btn btn-outline btn-gold w-full mt-2" style={{ display: 'flex', gap: '6px' }}>
                 <Plus size={16} />
@@ -737,6 +796,25 @@ export const OwnerDashboard: FC = () => {
                   onChange={(e) => setEditImage(e.target.value)}
                   placeholder="https://images.unsplash.com/..."
                 />
+                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: '6px' }}>
+                  {[
+                    { label: "✨ Luxury Spa", url: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80" },
+                    { label: "✂️ Modern Hair Studio", url: "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1200&q=80" },
+                    { label: "💈 Barber & Lounge", url: "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=1200&q=80" },
+                    { label: "🌿 Ayurvedic Sanctuary", url: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=1200&q=80" },
+                    { label: "💄 Glamour Parlour", url: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1200&q=80" }
+                  ].map((preset, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      className="btn btn-outline"
+                      onClick={() => setEditImage(preset.url)}
+                      style={{ fontSize: '10px', padding: '3px 8px', textTransform: 'none' }}
+                    >
+                      {preset.label}
+                    </button>
+                  ))}
+                </div>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div className="form-group" style={{ marginBottom: 0 }}>
@@ -762,6 +840,16 @@ export const OwnerDashboard: FC = () => {
               </div>
               <button type="submit" className="btn btn-gold w-full mt-2">
                 Save Profile Changes
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteSalon}
+                className="btn btn-secondary text-danger w-full mt-2"
+                style={{ border: '1px solid rgba(255,69,58,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                title="Delete this salon listing and allow creating a new profile"
+              >
+                <Trash2 size={14} />
+                <span>Delete My Salon & Create New</span>
               </button>
             </form>
           </div>

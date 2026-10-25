@@ -131,9 +131,12 @@ public class SalonController {
         SalonDTO salonDTO = SalonMapper.mapToDTO(salon);
 
         return ResponseEntity.ok(salonDTO);
-
     }
 
-
+    @DeleteMapping("/{salonId}")
+    public ResponseEntity<String> deleteSalon(@PathVariable Long salonId) throws Exception {
+        salonService.deleteSalon(salonId);
+        return ResponseEntity.ok("Salon deleted successfully");
+    }
 
 }

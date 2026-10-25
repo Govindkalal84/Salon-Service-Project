@@ -25,7 +25,7 @@ export const SalonCard: FC<SalonCardProps> = ({ salon, onExplore }) => {
         <h3>{salon.name}</h3>
         <div className="salon-card-info">
           <MapPin size={14} />
-          <span>{salon.address}, {salon.city} ({salon.state})</span>
+          <span>{salon.address}, {salon.city}{salon.state ? ` (${salon.state})` : ''}</span>
         </div>
         <div className="salon-card-info">
           <Phone size={14} />
