@@ -66,8 +66,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserFromJwt(String jwt) throws Exception {
-        KeycloakUserDTO keycloakUserDTO=keycloakService.fetchUserProfileByJwt(jwt);
+        KeycloakUserDTO keycloakUserDTO = keycloakService.fetchUserProfileByJwt(jwt);
 
-        return userRepository.findByEmail(keycloakUserDTO.getEmail());
+        User user = null;
+        if (keycloakUserDTO.getEmail() != null) {
+            user = userRepository.findByEmail(keycloakUserDTO.getEmail());
+        }
+        if (user == null && keycloakUserDTO.getUsername() != null) {
+            user = userRepository.findByUsername(keycloakUserDTO.getUsername());
+        }
+
+        // Auto-sync email from Keycloak if updated
+        if (user != null && keycloakUserDTO.getEmail() != null && !keycloakUserDTO.getEmail().equals(user.getEmail())) {
+            user.setEmail(keycloakUserDTO.getEmail());
+            user = userRepository.save(user);
+        }
+
+        return user;
     }
 }
