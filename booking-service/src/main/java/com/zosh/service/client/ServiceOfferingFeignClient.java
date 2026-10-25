@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.Set;
 
-@FeignClient("SERVICE-OFFERING")
+@FeignClient(value = "SERVICE-OFFERING", url = "${SERVICE_OFFERING_URL:https://salon-service-project-wv4y.onrender.com}")
 public interface ServiceOfferingFeignClient {
 
 
-    @GetMapping("/api/service-offering/list/(ids}")
+    @GetMapping("/api/service-offering/list/{ids}")
     public ResponseEntity<Set<ServiceDTO>> getServicesByIds(
-            @PathVariable Set<Long> ids
+            @PathVariable("ids") Set<Long> ids
     );
 
 }

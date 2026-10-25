@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 
-@FeignClient("SALON-SERVICE")
+@FeignClient(value = "SALON-SERVICE", url = "${SALON_SERVICE_URL:https://salon-service-project-z307.onrender.com}")
 public interface SalonFeignClient {
 
     @GetMapping("/api/salons/owner")

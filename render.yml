@@ -60,6 +60,8 @@ services:
         value: https://salon-service-project-z307.onrender.com
       - key: CATEGORY_SERVICE_URL
         value: https://salon-service-project-wpp6.onrender.com
+      - key: SERVICE_OFFERING_URL
+        value: https://salon-service-project-wv4y.onrender.com
 
   # ----------------------------------------
   # 4. CATEGORY SERVICE
@@ -131,6 +133,7 @@ services:
     env: docker
     rootDir: service-offering
     plan: free
+    autoDeploy: true
     envVars:
       - key: SPRING_DATASOURCE_URL
         value: jdbc:mysql://gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/salon
@@ -140,6 +143,12 @@ services:
         value: ER5KAuU7ycb51i90
       - key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
         value: https://eureka-4.onrender.com/eureka/
+      - key: USER_SERVICE_URL
+        value: https://salon-service-project-spmu.onrender.com
+      - key: SALON_SERVICE_URL
+        value: https://salon-service-project-z307.onrender.com
+      - key: CATEGORY_SERVICE_URL
+        value: https://salon-service-project-wpp6.onrender.com
 
   # ----------------------------------------
   # 8. NOTIFICATION

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
 
+@CrossOrigin(origins = {"https://salon-service-project.vercel.app", "http://localhost:5173", "http://localhost:3000", "http://localhost:5170"})
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/service-offering/salon-owner")
@@ -27,16 +28,32 @@ public class SalonServiceOfferingController {
             @RequestBody ServiceDTO serviceDTO,
             @RequestHeader("Authorization") String jwt
     ) throws Exception {
-        SalonDTO salonDTO = salonFeignClient.getSalonByOwnerId(jwt).getBody();
+        SalonDTO salonDTO = null;
+        try {
+            salonDTO = salonFeignClient.getSalonByOwnerId(jwt).getBody();
+        } catch (Exception e) {
+            System.err.println("Feign failed to get salon: " + e.getMessage());
+        }
 
-        CategoryDTO categoryDTO = categoryFeignClient
-                .getCategoriesByIdAndSalon(serviceDTO.getCategory(),salonDTO.getId()).getBody();
+        if (salonDTO == null || salonDTO.getId() == null) {
+            throw new Exception("Salon profile not found for this owner. Please register your salon first.");
+        }
+
+        CategoryDTO categoryDTO = null;
+        try {
+            categoryDTO = categoryFeignClient
+                    .getCategoriesByIdAndSalon(serviceDTO.getCategory(), salonDTO.getId()).getBody();
+        } catch (Exception e) {
+            System.err.println("Feign failed to get category: " + e.getMessage());
+        }
+
+        if (categoryDTO == null || categoryDTO.getId() == null) {
+            throw new Exception("Selected category not found for this salon.");
+        }
 
         ServiceOffering serviceOfferings = serviceOfferingService
-                .createService(salonDTO,serviceDTO,categoryDTO);
+                .createService(salonDTO, serviceDTO, categoryDTO);
         return ResponseEntity.ok(serviceOfferings);
-
-
     }
     @PostMapping("/{id}")
     public ResponseEntity<ServiceOffering> updateService(
