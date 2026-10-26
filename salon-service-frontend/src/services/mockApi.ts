@@ -88,78 +88,65 @@ export function initDemoDatabase() {
   if (!localStorage.getItem("demo_initialized_v4")) {
     // 1. Categories
     const mockCategories: Category[] = [
-      { id: 1, name: "Haircut & Styling", image: "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=200&q=80" },
-      { id: 2, name: "Facial & Spa", image: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=200&q=80" },
-      { id: 3, name: "Manicure & Pedicure", image: "https://images.unsplash.com/photo-1604654894610-df63bc536371?w=200&q=80" },
-      { id: 4, name: "Massage Therapy", image: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=200&q=80" }
+      { id: 1, name: "Haircut & Styling", image: "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=600&q=85" },
+      { id: 2, name: "Facial & Spa", image: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=600&q=85" },
+      { id: 3, name: "Manicure & Pedicure", image: "https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=600&q=85" },
+      { id: 4, name: "Massage Therapy", image: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=600&q=85" }
     ];
 
     // 2. Salons (Indian Cities and States)
     const mockSalons: Salon[] = [
       { 
-        id: 1, 
-        name: "AURA Premium Spa & Salon", 
-        address: "Hill Road, Bandra West", 
-        city: "Mumbai", 
-        state: "Maharashtra", 
-        phoneNumber: "+91 22 5550 1890", 
-        email: "mumbai@aura.com", 
-        images: ["https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=800"], 
-        ownerId: 102, 
+        id: 253, 
+        name: "Luxe Nirvana Lounge", 
+        address: "100 Feet Road, Indiranagar", 
+        city: "Bengaluru", 
+        state: "Karnataka", 
+        phoneNumber: "+91 80 4123 7890", 
+        email: "bengaluru@luxenirvana.in", 
+        images: ["https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=900&q=85"], 
+        ownerId: 208, 
         openTime: "09:00", 
         closeTime: "21:00" 
       },
       { 
-        id: 2, 
-        name: "Luxe Grooming Lounge", 
-        address: "100 Feet Road, Indiranagar", 
-        city: "Bangalore", 
-        state: "Karnataka", 
-        phoneNumber: "+91 80 5550 1440", 
-        email: "blr@luxe.com", 
-        images: ["https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?q=80&w=800"], 
-        ownerId: 103, 
-        openTime: "10:00", 
-        closeTime: "20:00" 
-      },
-      { 
-        id: 3, 
-        name: "Velvet Retreat & Spa", 
+        id: 254, 
+        name: "Velvet Royale Studio", 
         address: "Ashok Marg, C-Scheme", 
         city: "Jaipur", 
         state: "Rajasthan", 
-        phoneNumber: "+91 141 5550 1550", 
-        email: "jaipur@velvet.com", 
-        images: ["https://images.unsplash.com/photo-1600948836101-f9ffda59d250?q=80&w=800"], 
-        ownerId: 104, 
+        phoneNumber: "+91 141 236 8920", 
+        email: "jaipur@velvetroyale.in", 
+        images: ["https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=900&q=85"], 
+        ownerId: 209, 
         openTime: "09:00", 
         closeTime: "22:00" 
       },
       { 
-        id: 4, 
-        name: "Royal Touch Salon", 
-        address: "Koregaon Park Road", 
-        city: "Pune", 
-        state: "Maharashtra", 
-        phoneNumber: "+91 20 5550 1660", 
-        email: "pune@royal.com", 
-        images: ["https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=800"], 
-        ownerId: 102, 
-        openTime: "09:00", 
+        id: 255, 
+        name: "Urban Crown Hair Studio", 
+        address: "Inner Circle, Connaught Place", 
+        city: "New Delhi", 
+        state: "Delhi NCR", 
+        phoneNumber: "+91 11 4872 3100", 
+        email: "delhi@urbancrown.in", 
+        images: ["https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=900&q=85"], 
+        ownerId: 210, 
+        openTime: "10:00", 
         closeTime: "21:00" 
       },
       { 
-        id: 5, 
-        name: "Golden Glow Salon & Spa", 
-        address: "Outer Circle, Connaught Place", 
-        city: "Delhi", 
-        state: "Delhi", 
-        phoneNumber: "+91 11 5550 1770", 
-        email: "delhi@goldenglow.com", 
-        images: ["https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?q=80&w=800"], 
-        ownerId: 105, 
-        openTime: "10:00", 
-        closeTime: "21:00" 
+        id: 256, 
+        name: "Aura Glamour Sanctuary", 
+        address: "Road No. 36, Jubilee Hills", 
+        city: "Hyderabad", 
+        state: "Telangana", 
+        phoneNumber: "+91 40 2355 9840", 
+        email: "hyderabad@auraglamour.in", 
+        images: ["https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=900&q=85"], 
+        ownerId: 211, 
+        openTime: "09:30", 
+        closeTime: "21:30" 
       }
     ];
 

@@ -235,11 +235,22 @@ export const AdminDashboard: FC = () => {
                             {s.email && <div style={{ color: 'var(--text-muted)' }}>{s.email}</div>}
                           </div>
                         </td>
-                        <td style={{ padding: '16px 20px', fontFamily: 'monospace', color: 'var(--gold-primary)' }}>
-                          #{s.ownerId}
+                        <td style={{ padding: '16px 20px' }}>
+                          {(() => {
+                            const owner = users.find(u => u.id === s.ownerId);
+                            if (owner) {
+                              return (
+                                <div>
+                                  <div style={{ fontWeight: 600, color: 'var(--gold-primary)' }}>{owner.fullName}</div>
+                                  <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>@{owner.username} &bull; #{s.ownerId}</div>
+                                </div>
+                              );
+                            }
+                            return <span style={{ fontFamily: 'monospace', color: 'var(--gold-primary)' }}>#{s.ownerId}</span>;
+                          })()}
                         </td>
                         <td style={{ padding: '16px 20px', fontSize: '12px', color: 'var(--text-muted)' }}>
-                          {s.openTime || '09:00'} - {s.closeTime || '20:00'}
+                          {s.openTime ? String(s.openTime).slice(0, 5) : '09:00'} - {s.closeTime ? String(s.closeTime).slice(0, 5) : '20:00'}
                         </td>
                         <td style={{ padding: '16px 20px', textAlign: 'center' }}>
                           <button
