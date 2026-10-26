@@ -1552,49 +1552,550 @@ select.form-control option {
     100% { transform: rotate(360deg); }
 }
 
-/* --- Responsive Adjustments --- */
-@media (max-width: 900px) {
-    .salon-layout, .dashboard-layout {
-        grid-template-columns: 1fr;
-    }
-    
-    .sidebar-panel {
-        position: static;
-        margin-top: 30px;
+/* ==========================================================================
+   BBEAUTY SIGNATURE DRIBBBLE THEME & FRONT PAGE SYSTEM
+   ========================================================================== */
+
+.bbeauty-page {
+    background-color: #fff9f8;
+    color: #1e1e24;
+    min-height: 100vh;
+    font-family: 'Outfit', sans-serif;
+}
+
+/* --- BBeauty Header Theme --- */
+.bbeauty-header {
+    background: #ffffff !important;
+    border-bottom: 1px solid #f5e4e3 !important;
+    box-shadow: 0 2px 20px rgba(234, 106, 117, 0.05);
+}
+
+.bbeauty-logo-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.bbeauty-logo-text {
+    font-family: 'Outfit', sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    color: #1e1e24;
+    letter-spacing: -0.5px;
+}
+
+.bbeauty-logo-text span {
+    color: #ea6a75;
+}
+
+.bbeauty-logo-pill {
+    background: #fff0f1;
+    color: #ea6a75;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 12px;
+    letter-spacing: 1px;
+}
+
+.bbeauty-nav-link {
+    font-size: 15px !important;
+    font-weight: 500 !important;
+    color: #4b4b56 !important;
+    transition: all 0.2s ease !important;
+    padding: 6px 12px !important;
+    border-radius: 8px !important;
+}
+
+.bbeauty-nav-link:hover, .bbeauty-nav-link.active {
+    color: #ea6a75 !important;
+    background: #fff0f1 !important;
+}
+
+/* --- BBeauty Hero Section --- */
+.bbeauty-hero {
+    background: radial-gradient(circle at 75% 35%, #ffdcd7 0%, #ffece9 35%, #fff6f5 65%, #fffdfd 100%);
+    padding: 60px 20px 40px;
+    border-bottom: 1px solid #f7e8e7;
+    position: relative;
+    overflow: hidden;
+}
+
+.bbeauty-hero-container {
+    max-width: 1240px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 40px;
+    align-items: center;
+}
+
+.bbeauty-hero-left {
+    padding-right: 20px;
+}
+
+.bbeauty-hero-title {
+    font-size: 72px;
+    font-weight: 800;
+    line-height: 1.05;
+    color: #1e1e24;
+    margin-bottom: 14px;
+    letter-spacing: -1.5px;
+}
+
+.bbeauty-hero-title span {
+    color: #1e1e24;
+    font-weight: 700;
+}
+
+.bbeauty-hero-subtitle {
+    font-size: 19px;
+    color: #7a7a85;
+    margin-bottom: 35px;
+    font-weight: 400;
+    line-height: 1.4;
+}
+
+/* Pill Search Box */
+.bbeauty-search-box {
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    border-radius: 50px;
+    padding: 8px 10px 8px 24px;
+    box-shadow: 0 14px 40px rgba(234, 106, 117, 0.12);
+    border: 1px solid rgba(234, 106, 117, 0.2);
+    max-width: 540px;
+    transition: all 0.3s ease;
+}
+
+.bbeauty-search-box:focus-within {
+    box-shadow: 0 16px 45px rgba(234, 106, 117, 0.22);
+    border-color: #ea6a75;
+}
+
+.bbeauty-search-input {
+    border: none;
+    outline: none;
+    font-size: 15px;
+    color: #1e1e24;
+    flex: 1;
+    padding: 10px 12px;
+    background: transparent;
+    font-family: inherit;
+}
+
+.bbeauty-search-input::placeholder {
+    color: #a4a4b0;
+}
+
+.bbeauty-city-select {
+    border: none;
+    outline: none;
+    background: #fff5f5;
+    color: #4b4b56;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 12px;
+    border-radius: 20px;
+    margin-right: 8px;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.bbeauty-search-btn {
+    background: #ea6a75;
+    color: #ffffff;
+    border: none;
+    border-radius: 40px;
+    padding: 14px 34px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 6px 18px rgba(234, 106, 117, 0.35);
+}
+
+.bbeauty-search-btn:hover {
+    background: #d85863;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 22px rgba(234, 106, 117, 0.45);
+}
+
+/* Hero Right Image */
+.bbeauty-hero-right {
+    display: flex;
+    justify-content: center;
+    position: relative;
+}
+
+.bbeauty-hero-img-card {
+    position: relative;
+    max-width: 440px;
+    width: 100%;
+}
+
+.bbeauty-hero-img-card img {
+    width: 100%;
+    height: 480px;
+    object-fit: cover;
+    border-radius: 36px;
+    box-shadow: 0 20px 50px rgba(234, 106, 117, 0.2);
+    display: block;
+}
+
+.bbeauty-floating-badge {
+    position: absolute;
+    bottom: -15px;
+    left: -20px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 12px 18px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    border: 1px solid rgba(234, 106, 117, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* --- Subnav Category Bar --- */
+.bbeauty-subnav-bar {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    align-items: center;
+    padding: 22px 20px;
+    border-bottom: 1px solid #f3e5e4;
+    flex-wrap: wrap;
+    background: #ffffff;
+}
+
+.bbeauty-subnav-item {
+    background: none;
+    border: none;
+    font-size: 15px;
+    font-weight: 500;
+    color: #4b4b56;
+    cursor: pointer;
+    padding: 8px 18px;
+    border-radius: 25px;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.bbeauty-subnav-item:hover {
+    color: #ea6a75;
+    background: #fff0f1;
+}
+
+.bbeauty-subnav-item.active {
+    color: #ffffff;
+    background: #ea6a75;
+    font-weight: 600;
+    box-shadow: 0 4px 14px rgba(234, 106, 117, 0.3);
+}
+
+/* --- Section Title & Controls --- */
+.bbeauty-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+    padding-top: 10px;
+}
+
+.bbeauty-section-title {
+    font-size: 34px;
+    font-weight: 800;
+    color: #1e1e24;
+    letter-spacing: -0.5px;
+}
+
+.bbeauty-carousel-arrows {
+    display: flex;
+    gap: 10px;
+}
+
+.bbeauty-arrow-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid #f2dede;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #ea6a75;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.bbeauty-arrow-btn:hover {
+    background: #ea6a75;
+    color: #ffffff;
+    border-color: #ea6a75;
+    transform: scale(1.05);
+}
+
+/* --- BBeauty Salon Cards Grid --- */
+.bbeauty-salon-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+    margin-bottom: 60px;
+}
+
+@media (max-width: 1024px) {
+    .bbeauty-salon-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
-@media (max-width: 600px) {
-    .header-content {
+@media (max-width: 680px) {
+    .bbeauty-salon-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.bbeauty-salon-card {
+    background: #ffffff;
+    border-radius: 24px;
+    border: 1px solid #f5e6e5;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(234, 106, 117, 0.07);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+}
+
+.bbeauty-salon-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 45px rgba(234, 106, 117, 0.16);
+    border-color: #f7ced2;
+}
+
+.bbeauty-card-media {
+    position: relative;
+    width: 100%;
+    height: 220px;
+    overflow: hidden;
+}
+
+.bbeauty-card-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+}
+
+.bbeauty-salon-card:hover .bbeauty-card-media img {
+    transform: scale(1.06);
+}
+
+.bbeauty-favorite-btn {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(234, 106, 117, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #ea6a75;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.bbeauty-favorite-btn:hover {
+    transform: scale(1.1);
+    background: #ffffff;
+}
+
+.bbeauty-favorite-btn.favorited {
+    background: #ea6a75;
+    color: #ffffff;
+}
+
+.bbeauty-card-body {
+    padding: 20px 22px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.bbeauty-card-name {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1e1e24;
+    margin-bottom: 8px;
+}
+
+.bbeauty-tag-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+}
+
+.bbeauty-tag {
+    background: #fff0f1;
+    color: #ea6a75;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 12px;
+    letter-spacing: 0.3px;
+}
+
+.bbeauty-card-location {
+    font-size: 13px;
+    color: #7a7a85;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+.bbeauty-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: 14px;
+    border-top: 1px solid #f8ebeb;
+}
+
+.bbeauty-rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #1e1e24;
+}
+
+.bbeauty-rating span {
+    color: #7a7a85;
+    font-weight: 400;
+    font-size: 12px;
+}
+
+.bbeauty-book-btn {
+    background: #ea6a75;
+    color: #ffffff;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 12px rgba(234, 106, 117, 0.25);
+}
+
+.bbeauty-book-btn:hover {
+    background: #d85863;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(234, 106, 117, 0.35);
+}
+
+/* --- Mobile Experience Showcase (Right side of Dribbble) --- */
+.bbeauty-app-showcase {
+    background: linear-gradient(135deg, #fff2f0 0%, #ffe9e6 50%, #fff6f5 100%);
+    border-radius: 32px;
+    padding: 48px;
+    margin: 50px 0 70px;
+    border: 1px solid #f6dedc;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 40px;
+    align-items: center;
+}
+
+@media (max-width: 900px) {
+    .bbeauty-app-showcase {
+        grid-template-columns: 1fr;
+        padding: 30px;
+    }
+}
+
+.bbeauty-mobile-card {
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: 0 15px 40px rgba(234, 106, 117, 0.15);
+    border: 1px solid #f9e8e7;
+}
+
+.bbeauty-calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    text-align: center;
+    margin: 15px 0;
+    font-size: 12px;
+}
+
+.bbeauty-calendar-day {
+    padding: 6px 0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+    color: #4b4b56;
+}
+
+.bbeauty-calendar-day.selected {
+    background: #ea6a75;
+    color: #ffffff;
+    font-weight: 700;
+}
+
+/* Responsive adjustments */
+@media (max-width: 960px) {
+    .bbeauty-hero-container {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    
+    .bbeauty-hero-left {
+        padding-right: 0;
+    }
+    
+    .bbeauty-hero-title {
+        font-size: 52px;
+    }
+    
+    .bbeauty-search-box {
+        margin: 0 auto;
+    }
+    
+    .bbeauty-hero-img-card {
+        margin-top: 20px;
+    }
+}
+
+@media (max-width: 580px) {
+    .bbeauty-hero-title {
+        font-size: 40px;
+    }
+    
+    .bbeauty-search-box {
         flex-direction: column;
-        height: auto;
-        padding: 15px 20px;
-        gap: 15px;
+        border-radius: 20px;
+        padding: 12px;
+        gap: 8px;
     }
     
-    #app-header {
-        height: auto;
-    }
-    
-    .search-container {
-        flex-direction: column;
-        border-radius: var(--border-radius-md);
-        padding: 15px;
-    }
-    
-    .search-select-group {
-        border-left: none;
-        border-top: 1px solid var(--border-subtle);
-        padding-left: 0;
-        padding-top: 10px;
+    .bbeauty-search-btn {
         width: 100%;
-    }
-    
-    .hero h1 {
-        font-size: 32px;
-    }
-    
-    .hero p {
-        font-size: 15px;
     }
 }

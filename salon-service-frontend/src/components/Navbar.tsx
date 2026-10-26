@@ -25,8 +25,14 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, activePage, onToggle
     <header id="app-header">
       <div className="header-content">
         <div className="logo-area" onClick={() => handleNav('home')}>
-          <span className="logo-text">AURA</span>
-          <span className="logo-subtitle">SALON & SPA</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '26px', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.5px' }}>
+              B<span style={{ color: '#ea6a75' }}>Beauty</span>
+            </span>
+            <span style={{ background: '#fff0f1', color: '#ea6a75', fontSize: '10px', fontWeight: 700, padding: '2px 7px', borderRadius: '12px', letterSpacing: '1px' }}>
+              AURA
+            </span>
+          </div>
         </div>
 
         <nav className="nav-links">
@@ -34,7 +40,55 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, activePage, onToggle
             className={`nav-link-btn nav-link ${activePage === 'home' ? 'active' : ''}`}
             onClick={() => handleNav('home')}
           >
-            Explore
+            Home
+          </button>
+          <button
+            className="nav-link-btn nav-link"
+            onClick={() => {
+              handleNav('home');
+              setTimeout(() => {
+                const el = document.getElementById('bbeauty-salons-section');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }, 100);
+            }}
+          >
+            Services
+          </button>
+          <button
+            className="nav-link-btn nav-link"
+            onClick={() => {
+              handleNav('home');
+              setTimeout(() => {
+                const el = document.getElementById('bbeauty-salons-section');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }, 100);
+            }}
+          >
+            Salons
+          </button>
+          <button
+            className="nav-link-btn nav-link"
+            onClick={() => {
+              handleNav('home');
+              setTimeout(() => {
+                const el = document.getElementById('bbeauty-app-section');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }, 100);
+            }}
+          >
+            About Us
+          </button>
+          <button
+            className="nav-link-btn nav-link"
+            onClick={() => {
+              handleNav('home');
+              setTimeout(() => {
+                const el = document.getElementById('bbeauty-footer');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }, 100);
+            }}
+          >
+            Contact
           </button>
           {user?.role === 'CUSTOMER' && (
             <button
