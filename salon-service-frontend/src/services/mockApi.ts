@@ -83,9 +83,135 @@ export const setDemoModeActive = (active: boolean) => {
   localStorage.setItem("demo_mode", active ? "true" : "false");
 };
 
+export const DEFAULT_MOCK_SALONS: Salon[] = [
+  {
+    id: 1001,
+    name: "Andrew Beauty Spa",
+    address: "Bandra West, Link Road",
+    city: "Mumbai",
+    state: "Maharashtra",
+    phoneNumber: "+91 22 4982 7100",
+    email: "mumbai@andrewbeautyspa.in",
+    images: ["https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=900&q=85"],
+    ownerId: 208,
+    openTime: "09:00",
+    closeTime: "21:00"
+  },
+  {
+    id: 1002,
+    name: "Alpha beauty",
+    address: "100 Feet Road, Indiranagar",
+    city: "Bengaluru",
+    state: "Karnataka",
+    phoneNumber: "+91 80 4123 7890",
+    email: "bengaluru@alphabeauty.in",
+    images: ["https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=900&q=85"],
+    ownerId: 209,
+    openTime: "10:00",
+    closeTime: "20:30"
+  },
+  {
+    id: 1003,
+    name: "Queen B Salon",
+    address: "Ashok Marg, C-Scheme",
+    city: "Jaipur",
+    state: "Rajasthan",
+    phoneNumber: "+91 141 236 8920",
+    email: "jaipur@queenbsalon.in",
+    images: ["https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=900&q=85"],
+    ownerId: 210,
+    openTime: "09:30",
+    closeTime: "21:00"
+  },
+  {
+    id: 252,
+    name: "Aura Royale Sanctuary",
+    address: "Altamount Road, Cumballa Hill",
+    city: "Mumbai",
+    state: "Maharashtra",
+    phoneNumber: "+91 22 2351 9080",
+    email: "mumbai.flagship@aura-salon.in",
+    images: ["https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=900&q=85"],
+    ownerId: 102,
+    openTime: "09:00",
+    closeTime: "21:30"
+  },
+  { 
+    id: 253, 
+    name: "Luxe Nirvana Lounge", 
+    address: "100 Feet Road, Indiranagar", 
+    city: "Bengaluru", 
+    state: "Karnataka", 
+    phoneNumber: "+91 80 4123 7890", 
+    email: "bengaluru@luxenirvana.in", 
+    images: ["https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=900&q=85"], 
+    ownerId: 208, 
+    openTime: "09:00", 
+    closeTime: "21:00" 
+  },
+  { 
+    id: 254, 
+    name: "Velvet Royale Studio", 
+    address: "Ashok Marg, C-Scheme", 
+    city: "Jaipur", 
+    state: "Rajasthan", 
+    phoneNumber: "+91 141 236 8920", 
+    email: "jaipur@velvetroyale.in", 
+    images: ["https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=900&q=85"], 
+    ownerId: 209, 
+    openTime: "09:00", 
+    closeTime: "22:00" 
+  },
+  { 
+    id: 255, 
+    name: "Urban Crown Hair Studio", 
+    address: "Inner Circle, Connaught Place", 
+    city: "New Delhi", 
+    state: "Delhi NCR", 
+    phoneNumber: "+91 11 4872 3100", 
+    email: "delhi@urbancrown.in", 
+    images: ["https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=900&q=85"], 
+    ownerId: 210, 
+    openTime: "10:00", 
+    closeTime: "21:00" 
+  },
+  { 
+    id: 256, 
+    name: "Aura Glamour Sanctuary", 
+    address: "Road No. 36, Jubilee Hills", 
+    city: "Hyderabad", 
+    state: "Telangana", 
+    phoneNumber: "+91 40 2355 9840", 
+    email: "hyderabad@auraglamour.in", 
+    images: ["https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=900&q=85"], 
+    ownerId: 211, 
+    openTime: "09:30", 
+    closeTime: "21:30" 
+  }
+];
+
+export const DEFAULT_MOCK_SERVICES: Service[] = [
+  { id: 11, name: "Signature Haircut & Haute Blow-Dry", description: "Shampoo, cut, and customized styling blow-out.", price: 650, duration: 45, salonId: 1001, categoryId: 1 },
+  { id: 12, name: "Hydrating Facial & Botanical Spa", description: "Anti-aging facial utilizing premium herbal extracts.", price: 1200, duration: 60, salonId: 1001, categoryId: 2 },
+  { id: 13, name: "Deluxe Gel Manicure & Couture Nails", description: "Precision nail shaping, cuticle care, and gel polish.", price: 450, duration: 40, salonId: 1001, categoryId: 3 },
+  { id: 14, name: "Traditional Ayurvedic Massage Therapy", description: "Deep tissue stretching and therapeutic muscle relief.", price: 1800, duration: 75, salonId: 1001, categoryId: 4 },
+  
+  { id: 21, name: "Deluxe Gel Pedicure & Signature Cut", description: "Warm foot soak, precision shaping, exfoliation & custom cut.", price: 950, duration: 60, salonId: 1002, categoryId: 3 },
+  { id: 22, name: "Volcanic Hot Stone Therapy", description: "Warm volcanic stone massage targeting muscle tension.", price: 2500, duration: 75, salonId: 1002, categoryId: 4 },
+  { id: 23, name: "Radiant Skin Cleansing Facial", description: "Deep pore purification and botanical gold mask.", price: 1400, duration: 50, salonId: 1002, categoryId: 2 },
+
+  { id: 31, name: "Balayage Highlights & Texture Sculpting", description: "Hand-painted natural looking color gradient highlights.", price: 4500, duration: 120, salonId: 1003, categoryId: 1 },
+  { id: 32, name: "Artisanal Nail Couture & Pedicure Spa", description: "High-fashion nail art, cuticle hydration & massage.", price: 800, duration: 50, salonId: 1003, categoryId: 3 },
+  { id: 33, name: "Deep Tissue Swedish Massage", description: "Intense pressure massage relieving chronic tension.", price: 2000, duration: 90, salonId: 1003, categoryId: 4 },
+
+  { id: 41, name: "Royal Bridal Makeover", description: "Premium wedding makeup, hair styling, and draping.", price: 8500, duration: 180, salonId: 252, categoryId: 1 },
+  { id: 42, name: "Aromatherapy Gold Spa", description: "Calming massage using premium essential oils.", price: 2200, duration: 60, salonId: 252, categoryId: 4 },
+  { id: 43, name: "Precision Fade & Beard Sculpt", description: "Hot towel ritual and organic beard conditioning.", price: 550, duration: 35, salonId: 252, categoryId: 1 }
+];
+
 // Initialize Demo Mode database in localStorage if not exists
 export function initDemoDatabase() {
-  if (!localStorage.getItem("demo_initialized_v4")) {
+  if (!localStorage.getItem("demo_initialized_v6")) {
     // 1. Categories
     const mockCategories: Category[] = [
       { id: 1, name: "Haircut & Styling", image: "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=600&q=85" },
@@ -94,82 +220,12 @@ export function initDemoDatabase() {
       { id: 4, name: "Massage Therapy", image: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=600&q=85" }
     ];
 
-    // 2. Salons (Indian Cities and States)
-    const mockSalons: Salon[] = [
-      { 
-        id: 253, 
-        name: "Luxe Nirvana Lounge", 
-        address: "100 Feet Road, Indiranagar", 
-        city: "Bengaluru", 
-        state: "Karnataka", 
-        phoneNumber: "+91 80 4123 7890", 
-        email: "bengaluru@luxenirvana.in", 
-        images: ["https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=900&q=85"], 
-        ownerId: 208, 
-        openTime: "09:00", 
-        closeTime: "21:00" 
-      },
-      { 
-        id: 254, 
-        name: "Velvet Royale Studio", 
-        address: "Ashok Marg, C-Scheme", 
-        city: "Jaipur", 
-        state: "Rajasthan", 
-        phoneNumber: "+91 141 236 8920", 
-        email: "jaipur@velvetroyale.in", 
-        images: ["https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=900&q=85"], 
-        ownerId: 209, 
-        openTime: "09:00", 
-        closeTime: "22:00" 
-      },
-      { 
-        id: 255, 
-        name: "Urban Crown Hair Studio", 
-        address: "Inner Circle, Connaught Place", 
-        city: "New Delhi", 
-        state: "Delhi NCR", 
-        phoneNumber: "+91 11 4872 3100", 
-        email: "delhi@urbancrown.in", 
-        images: ["https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=900&q=85"], 
-        ownerId: 210, 
-        openTime: "10:00", 
-        closeTime: "21:00" 
-      },
-      { 
-        id: 256, 
-        name: "Aura Glamour Sanctuary", 
-        address: "Road No. 36, Jubilee Hills", 
-        city: "Hyderabad", 
-        state: "Telangana", 
-        phoneNumber: "+91 40 2355 9840", 
-        email: "hyderabad@auraglamour.in", 
-        images: ["https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=900&q=85"], 
-        ownerId: 211, 
-        openTime: "09:30", 
-        closeTime: "21:30" 
-      }
-    ];
+    // 2. Salons (Indian Cities and States + Dribbble Salons)
+    const mockSalons: Salon[] = [...DEFAULT_MOCK_SALONS];
 
     // 3. Services (Pricing in INR)
-    const mockServices: Service[] = [
-      { id: 11, name: "Signature Haircut", description: "Shampoo, cut, and customized styling blow-out.", price: 650, duration: 45, salonId: 1, categoryId: 1 },
-      { id: 12, name: "Hydrating Facial Spa", description: "Anti-aging facial utilizing premium herbal extracts.", price: 1200, duration: 60, salonId: 1, categoryId: 2 },
-      { id: 13, name: "Gel Manicure", description: "Precision nail shaping, cuticle care, and gel polish.", price: 450, duration: 40, salonId: 1, categoryId: 3 },
-      { id: 14, name: "Traditional Thai Massage", description: "Deep tissue stretching and body massage.", price: 1800, duration: 75, salonId: 1, categoryId: 4 },
-      
-      { id: 21, name: "Premium Beard Grooming", description: "Classic hot towel shave with beard trim and styling.", price: 350, duration: 30, salonId: 2, categoryId: 1 },
-      { id: 22, name: "Hot Stone Therapy", description: "Warm volcanic stone massage targeting muscle tension.", price: 2500, duration: 75, salonId: 2, categoryId: 4 },
-      { id: 23, name: "Organic Pedicure", description: "Relaxing foot soak, scrub, and standard nail polish.", price: 500, duration: 45, salonId: 2, categoryId: 3 },
-      
-      { id: 31, name: "Balayage Highlights", description: "Hand-painted natural looking color gradient highlights.", price: 4500, duration: 120, salonId: 3, categoryId: 1 },
-      { id: 32, name: "Deep Tissue Swedish Massage", description: "Intense pressure massage relieving chronic tension.", price: 2000, duration: 90, salonId: 3, categoryId: 4 },
-      
-      { id: 41, name: "Style & Blow Dry", description: "Professional wash, conditioning, and custom styling.", price: 550, duration: 30, salonId: 4, categoryId: 1 },
-      { id: 42, name: "Detoxifying Clay Facial", description: "Deep cleansing clay mask and blackhead removal.", price: 950, duration: 50, salonId: 4, categoryId: 2 },
-      
-      { id: 51, name: "Royal Bridal Makeover", description: "Premium wedding makeup, hair styling, and draping.", price: 8500, duration: 180, salonId: 5, categoryId: 1 },
-      { id: 52, name: "Aromatherapy Massage", description: "Calming massage using premium essential oils.", price: 2200, duration: 60, salonId: 5, categoryId: 4 }
-    ];
+    const mockServices: Service[] = [...DEFAULT_MOCK_SERVICES];
+    localStorage.setItem("demo_initialized_v6", "true");
     
     // 4. Reviews
     const mockReviews: Review[] = [
@@ -343,14 +399,19 @@ function handleMockRouting(endpoint: string, options: any) {
     
     if (parts.length === 4) {
       const sid = parseInt(parts[3]);
-      const salon = salons.find(s => s.id === sid);
+      let salon = salons.find(s => s.id === sid);
+      if (!salon) {
+        salon = DEFAULT_MOCK_SALONS.find(s => s.id === sid) || DEFAULT_MOCK_SALONS[0];
+      }
       if (!salon) throw new Error("Salon not found");
       
       if (method === "PUT") {
         const idx = salons.findIndex(s => s.id === sid);
-        salons[idx] = { ...salons[idx], ...body };
-        setDB("demo_salons", salons);
-        return salons[idx];
+        if (idx !== -1) {
+          salons[idx] = { ...salons[idx], ...body };
+          setDB("demo_salons", salons);
+          return salons[idx];
+        }
       }
       return salon;
     }
@@ -373,7 +434,7 @@ function handleMockRouting(endpoint: string, options: any) {
       setDB("demo_salons", salons);
       return newSalon;
     }
-    return salons;
+    return salons.length > 0 ? salons : DEFAULT_MOCK_SALONS;
   }
 
   // --- ROUTE: /api/service-offering ---
@@ -382,7 +443,14 @@ function handleMockRouting(endpoint: string, options: any) {
     
     if (endpoint.includes("/salon/")) {
       const salonId = parseInt(endpoint.split("/").pop() || "0");
-      return services.filter(s => s.salonId === salonId);
+      let matched = services.filter(s => s.salonId === salonId);
+      if (matched.length === 0) {
+        matched = DEFAULT_MOCK_SERVICES.filter(s => s.salonId === salonId);
+      }
+      if (matched.length === 0) {
+        matched = DEFAULT_MOCK_SERVICES.slice(0, 4).map(s => ({ ...s, salonId }));
+      }
+      return matched;
     }
     
     if (method === "POST" && endpoint.includes("/salon-owner")) {

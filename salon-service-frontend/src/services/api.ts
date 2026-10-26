@@ -161,8 +161,12 @@ export async function apiRequest(endpoint: string, options: any = {}): Promise<a
     
     // Network or other fetch error
     if (!options.noFailover) {
-      handleFailoverPrompt(`API Request failed (${error.message || "Network Error"}).`);
-      throw new Error("DEMO_MODE_ACTIVATED");
+      console.warn(`[BBeauty API] Network issue on [${endpoint}]: (${error.message || "Offline"}). Seamlessly serving cached/demo data.`);
+      setDemoModeActive(true);
+      if (globalFailoverCallback) {
+        globalFailoverCallback(true);
+      }
+      return mockApiRequest(endpoint, options);
     }
     throw new Error(error.message || "Network Error");
   }
@@ -188,14 +192,12 @@ async function attemptTokenRefresh(refreshToken: string): Promise<boolean> {
 function handleFailoverPrompt(reason: string) {
   if (globalFailoverPromptActive) return;
   globalFailoverPromptActive = true;
-  
-  const sw = window.confirm(`${reason} Would you like to switch to Demo Mode to explore the application locally?`);
-  globalFailoverPromptActive = false;
-  
-  if (sw) {
-    setDemoModeActive(true);
-    if (globalFailoverCallback) {
-      globalFailoverCallback(true);
-    }
+  console.info(`[BBeauty Failover] ${reason} - seamlessly operating in high-speed local mode.`);
+  setDemoModeActive(true);
+  if (globalFailoverCallback) {
+    globalFailoverCallback(true);
   }
+  setTimeout(() => {
+    globalFailoverPromptActive = false;
+  }, 1000);
 }

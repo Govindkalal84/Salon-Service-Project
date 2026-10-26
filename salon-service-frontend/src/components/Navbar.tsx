@@ -59,12 +59,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, activePage, onToggle
             onClick={() => {
               handleNav('home');
               setTimeout(() => {
-                const el = document.getElementById('bbeauty-salons-section');
+                const el = document.getElementById('exquisite-categories-section');
                 if (el) el.scrollIntoView({ behavior: 'smooth' });
               }, 100);
             }}
           >
-            Salons
+            Blog
           </button>
           <button
             className="nav-link-btn nav-link"
@@ -141,44 +141,92 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, activePage, onToggle
         <div className="nav-actions">
           {/* Demo Mode Toggle */}
           <button
-            className="btn btn-outline"
             onClick={() => toggleDemoMode()}
             style={{
-              borderColor: demoMode ? 'var(--gold-primary)' : 'rgba(212, 175, 55, 0.3)',
-              padding: '8px 14px',
+              background: demoMode ? '#fff0f1' : '#f8f8fa',
+              border: demoMode ? '1px solid #ea6a75' : '1px solid #e8e8ee',
+              borderRadius: '20px',
+              padding: '6px 13px',
               fontSize: '12px',
-              color: demoMode ? 'var(--gold-primary)' : 'var(--text-secondary)',
+              fontWeight: 600,
+              color: demoMode ? '#ea6a75' : '#7a7a85',
               display: 'flex',
               alignItems: 'center',
-              gap: '6px'
+              gap: '6px',
+              cursor: 'pointer'
             }}
           >
-            <PlayCircle size={16} />
-            <span>Demo Mode: {demoMode ? 'On' : 'Off'}</span>
+            <PlayCircle size={15} style={{ color: demoMode ? '#ea6a75' : '#9a9aa8' }} />
+            <span>Demo: {demoMode ? 'ON' : 'OFF'}</span>
           </button>
 
-          {/* Notification Bell */}
-          {user && (
-            <button className="nav-action-btn" onClick={onToggleNotifications}>
-              <Bell size={20} />
-              {unreadCount > 0 && (
-                <span className="badge">{unreadCount}</span>
-              )}
-            </button>
-          )}
+          {/* Notification Bell (Dribbble icon) */}
+          <button
+            onClick={onToggleNotifications}
+            aria-label="Notifications"
+            style={{
+              background: '#fcfcfd',
+              border: '1px solid #f0e6e5',
+              width: '38px',
+              height: '38px',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#4b4b56',
+              cursor: 'pointer',
+              position: 'relative'
+            }}
+          >
+            <Bell size={18} />
+            {unreadCount > 0 && (
+              <span style={{ position: 'absolute', top: '-2px', right: '-2px', background: '#ea6a75', color: '#fff', fontSize: '10px', fontWeight: 700, borderRadius: '50%', width: '16px', height: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {unreadCount}
+              </span>
+            )}
+          </button>
 
-          {/* Auth Toggle Button / Profile Dropdown */}
+          {/* User Profile / Login (Dribbble user icon) */}
           {!user ? (
-            <button className="btn btn-outline" onClick={() => handleNav('auth')}>
-              <User size={16} />
-              <span>Login</span>
+            <button
+              onClick={() => handleNav('auth')}
+              aria-label="Login"
+              style={{
+                background: '#fcfcfd',
+                border: '1px solid #f0e6e5',
+                width: '38px',
+                height: '38px',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#4b4b56',
+                cursor: 'pointer'
+              }}
+            >
+              <User size={18} />
             </button>
           ) : (
             <div className="profile-dropdown">
-              <div className="profile-trigger" onClick={() => setDropdownOpen(!dropdownOpen)}>
-                <div className="avatar">{initials}</div>
-                <span className="username">{user.fullName || user.username}</span>
-                <ChevronDown size={14} />
+              <div
+                className="profile-trigger"
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                style={{
+                  background: '#fff0f1',
+                  border: '1px solid #ffd5d1',
+                  borderRadius: '24px',
+                  padding: '4px 12px 4px 6px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  cursor: 'pointer'
+                }}
+              >
+                <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#ea6a75', color: '#fff', fontSize: '11px', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {initials}
+                </div>
+                <span style={{ fontSize: '13px', fontWeight: 600, color: '#1e1e24' }}>{user.fullName ? user.fullName.split(' ')[0] : user.username}</span>
+                <ChevronDown size={14} style={{ color: '#ea6a75' }} />
               </div>
               
               {dropdownOpen && (

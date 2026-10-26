@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback, type FC } from 'react';
 import { apiRequest } from '../services/api';
 import { useAuth } from '../context/AuthContext';
-import type { Salon, Service } from '../services/mockApi';
+import { DEFAULT_MOCK_SALONS, DEFAULT_MOCK_SERVICES, type Salon, type Service } from '../services/mockApi';
 import { ReviewSection } from '../components/ReviewSection';
 import { UPIQrPayment } from '../components/UPIQrPayment';
-import { Clock, MapPin, Phone, Star, Calendar, ArrowRight, X } from 'lucide-react';
+import { Clock, MapPin, Phone, Star, Calendar, ArrowRight, X, ChevronLeft } from 'lucide-react';
 
 interface SalonDetailProps {
   salonId: number;
@@ -40,13 +40,40 @@ export const SalonDetail: FC<SalonDetailProps> = ({ salonId, onNavigate }) => {
   const loadSalonDetails = useCallback(async () => {
     try {
       setLoading(true);
-      const salonData = await apiRequest(`/api/salons/${salonId}`);
+      let salonData = null;
+      try {
+        salonData = await apiRequest(`/api/salons/${salonId}`);
+      } catch (err) {
+        console.warn(`[SalonDetail] Backend request failed, resolving from catalog:`, err);
+      }
+      
+      if (!salonData) {
+        salonData = DEFAULT_MOCK_SALONS.find(s => s.id === Number(salonId)) || DEFAULT_MOCK_SALONS[0];
+      }
       setSalon(salonData);
       
-      const servicesData = await apiRequest(`/api/service-offering/salon/${salonId}`).catch(() => []);
-      setServices(Array.isArray(servicesData) ? servicesData : []);
+      let servicesData: any[] = [];
+      try {
+        const fetched = await apiRequest(`/api/service-offering/salon/${salonId}`);
+        if (Array.isArray(fetched) && fetched.length > 0) {
+          servicesData = fetched;
+        }
+      } catch {
+        // ignore
+      }
+      
+      if (servicesData.length === 0) {
+        const matched = DEFAULT_MOCK_SERVICES.filter(s => s.salonId === Number(salonId));
+        servicesData = matched.length > 0 
+          ? matched 
+          : DEFAULT_MOCK_SERVICES.slice(0, 4).map(s => ({ ...s, salonId: Number(salonId) }));
+      }
+      setServices(servicesData);
     } catch (e) {
       console.error("Failed to load salon details", e);
+      const fallback = DEFAULT_MOCK_SALONS.find(s => s.id === Number(salonId)) || DEFAULT_MOCK_SALONS[0];
+      setSalon(fallback);
+      setServices(DEFAULT_MOCK_SERVICES.slice(0, 4).map(s => ({ ...s, salonId: fallback.id })));
     } finally {
       setLoading(false);
     }
@@ -198,16 +225,47 @@ export const SalonDetail: FC<SalonDetailProps> = ({ salonId, onNavigate }) => {
   }
 
   return (
-    <div>
+    <div className="bbeauty-salon-detail-page">
+      {/* Top Breadcrumb Navigation */}
+      <div style={{ background: '#ffffff', borderBottom: '1px solid #f3e5e4', padding: '14px 20px' }}>
+        <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
+          <button 
+            onClick={() => onNavigate('home')}
+            style={{
+              background: '#fff0f1',
+              border: '1px solid #ffd5d1',
+              borderRadius: '24px',
+              padding: '8px 20px',
+              color: '#ea6a75',
+              fontWeight: 700,
+              fontSize: '13px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            <ChevronLeft size={16} />
+            <span>Back to BBeauty Home</span>
+          </button>
+          <div style={{ fontSize: '13px', color: '#686875', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ color: '#ea6a75', fontWeight: 700 }}>{salon.city}, {salon.state}</span>
+            <span>&bull;</span>
+            <span>{salon.address}</span>
+          </div>
+        </div>
+      </div>
+
       <div className="salon-banner">
         <img src={salon.images && salon.images.length > 0 ? salon.images[0] : "https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=1200"} alt={salon.name} />
         <div className="salon-banner-overlay">
           <div className="salon-header-info">
-            <span className="user-role-badge">Premium Care</span>
-            <h1 className="playfair">{salon.name}</h1>
+            <span className="user-role-badge" style={{ background: '#ea6a75', color: '#ffffff', border: 'none' }}>Verified Premier</span>
+            <h1 className="playfair" style={{ color: '#ffffff', textShadow: '0 2px 10px rgba(0,0,0,0.6)' }}>{salon.name}</h1>
             <div className="rating-display" id="salon-header-stars">
-              <Star size={16} fill="currentColor" className="gold-text" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '4px' }} />
-              <span>4.8 (Based on guest reviews)</span>
+              <Star size={16} fill="#ea6a75" color="#ea6a75" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '4px' }} />
+              <span style={{ color: '#ffffff', textShadow: '0 1px 4px rgba(0,0,0,0.6)' }}>4.9 (Based on verified guest reviews)</span>
             </div>
           </div>
         </div>

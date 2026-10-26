@@ -11,9 +11,12 @@ import {
   ChevronRight, 
   Sparkles, 
   Calendar, 
-  Clock, 
-  CheckCircle2, 
-  ArrowRight
+  Mic,
+  SlidersHorizontal,
+  Home as HomeIcon,
+  FileText,
+  User as UserIcon,
+  Plus
 } from 'lucide-react';
 
 import bbeautyHeroImg from '../assets/bbeauty_hero.jpg';
@@ -316,14 +319,14 @@ export const Home: FC<HomeProps> = ({ onNavigate }) => {
           <h2 className="bbeauty-section-title">We Offer Best Services</h2>
           <div className="bbeauty-carousel-arrows">
             <button
-              className="bbeauty-arrow-btn"
+              className="bbeauty-arrow-btn-left"
               onClick={() => scrollCarousel('left')}
               aria-label="Scroll left"
             >
-              <ChevronLeft size={20} />
+              <ChevronLeft size={24} />
             </button>
             <button
-              className="bbeauty-arrow-btn"
+              className="bbeauty-arrow-btn-right"
               onClick={() => scrollCarousel('right')}
               aria-label="Scroll right"
             >
@@ -351,28 +354,32 @@ export const Home: FC<HomeProps> = ({ onNavigate }) => {
                     onClick={(e) => toggleFavorite(item.id, e)}
                     aria-label="Save to favorites"
                   >
-                    <Heart size={18} fill={isFav ? '#ea6a75' : 'none'} />
+                    <Heart size={16} fill={isFav ? '#ffffff' : 'none'} color="#ffffff" />
                   </button>
                 </div>
                 <div className="bbeauty-card-body">
                   <h3 className="bbeauty-card-name">{item.name}</h3>
                   <div className="bbeauty-tag-row">
                     {item.tags.map((t, idx) => (
-                      <span key={idx} className="bbeauty-tag">{t}</span>
+                      <span key={idx} className="bbeauty-tag">
+                        <Sparkles size={11} />
+                        {t}
+                      </span>
                     ))}
                   </div>
                   <div className="bbeauty-card-location">
-                    <MapPin size={14} style={{ color: '#ea6a75', flexShrink: 0 }} />
-                    <span>{item.address}, {item.city} ({item.state})</span>
+                    <div style={{ fontWeight: 600, color: '#4b4b56' }}>{item.city}, {item.state}</div>
+                    <div style={{ color: '#8a8a96', fontSize: '11px', marginTop: '2px' }}>{item.address}</div>
                   </div>
                   <div className="bbeauty-card-footer">
                     <div className="bbeauty-rating">
-                      <Star size={14} fill="#ea6a75" color="#ea6a75" />
-                      <span>{item.rating} ({item.reviewsCount})</span>
+                      <Star size={13} fill="#ea6a75" color="#ea6a75" />
+                      <span>{item.rating}</span>
+                      <span>({item.reviewsCount})</span>
                     </div>
                     <button
                       className="bbeauty-book-btn"
-                      onClick={() => handleExplore(salons[0]?.id || 253)}
+                      onClick={() => handleExplore(item.id)}
                     >
                       Book Now
                     </button>
@@ -495,106 +502,287 @@ export const Home: FC<HomeProps> = ({ onNavigate }) => {
       {/* =========================================================================
           MOBILE APPOINTMENT BOOKING PREVIEW (Right side of Dribbble Shot)
           ========================================================================= */}
+      {/* =========================================================================
+          BBEAUTY MOBILE PLATFORM SHOWCASE (Right side of Dribbble Shot)
+          ========================================================================= */}
       <section className="container" id="bbeauty-app-section" style={{ paddingBottom: '70px' }}>
-        <div className="bbeauty-app-showcase">
-          <div>
-            <span style={{ color: '#ea6a75', fontWeight: 700, fontSize: '13px', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
-              Digital Platform for Beauty Services
-            </span>
-            <h2 style={{ fontSize: '38px', fontWeight: 800, color: '#1e1e24', margin: '10px 0 16px', lineHeight: 1.15 }}>
-              Reserve Your Ritual Anytime, Anywhere
-            </h2>
-            <p style={{ color: '#686875', fontSize: '16px', lineHeight: 1.6, marginBottom: '25px' }}>
-              Experience effortless appointment scheduling. Browse verified beauty studios, select master practitioners, review verified ratings, and pay seamlessly via UPI.
+        <div className="bbeauty-canvas-wrapper">
+          <div className="bbeauty-canvas-header">
+            <span className="badge-pill">Digital Platform for Beauty Services</span>
+            <h2>Book On The Go &bull; Mobile Experience</h2>
+            <p>
+              Experience seamless salon discovery, real-time appointments, and effortless booking across India right in the palm of your hand.
             </p>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '30px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#1e1e24', fontWeight: 600 }}>
-                <CheckCircle2 size={18} style={{ color: '#ea6a75' }} />
-                <span>Instant Confirmation & Real-time Reminders</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#1e1e24', fontWeight: 600 }}>
-                <CheckCircle2 size={18} style={{ color: '#ea6a75' }} />
-                <span>Verified Cleanliness & Premium Sanitization Standards</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#1e1e24', fontWeight: 600 }}>
-                <CheckCircle2 size={18} style={{ color: '#ea6a75' }} />
-                <span>Zero Cancellation Fees up to 2 Hours Before</span>
-              </div>
-            </div>
-
-            <button
-              className="bbeauty-search-btn"
-              onClick={() => {
-                const el = document.getElementById('bbeauty-salons-section');
-                if (el) el.scrollIntoView({ behavior: 'smooth' });
-              }}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
-            >
-              <span>Explore Top Salons</span>
-              <ArrowRight size={16} />
-            </button>
           </div>
 
-          {/* Interactive Mobile Screen Mockup */}
-          <div className="bbeauty-mobile-card">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Calendar size={18} style={{ color: '#ea6a75' }} />
-                <span style={{ fontWeight: 700, fontSize: '15px', color: '#1e1e24' }}>My Appointments</span>
+          <div className="bbeauty-mobile-grid">
+            {/* Phone 1: Search & Filter (Nail Salon) */}
+            <div className="bbeauty-phone-frame">
+              <div className="bbeauty-phone-notch" />
+              <div className="bbeauty-phone-status-bar">
+                <span>9:41</span>
+                <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                  <Sparkles size={11} color="#ea6a75" />
+                  <span>5G</span>
+                </div>
               </div>
-              <span style={{ fontSize: '12px', color: '#ea6a75', fontWeight: 600 }}>April 2026</span>
+              <div className="bbeauty-phone-body">
+                {/* Header */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                  <ChevronLeft size={16} />
+                  <span style={{ fontWeight: 700, fontSize: '14px' }}>Nail salon</span>
+                </div>
+
+                {/* Search */}
+                <div style={{ display: 'flex', alignItems: 'center', background: '#f8f8fa', borderRadius: '16px', padding: '6px 12px', gap: '8px', marginBottom: '10px', border: '1px solid #eee' }}>
+                  <Search size={14} color="#ea6a75" />
+                  <input type="text" placeholder="Search" style={{ border: 'none', background: 'transparent', outline: 'none', fontSize: '12px', width: '100%' }} readOnly value="Nail Art &amp; Spa" />
+                  <Mic size={14} color="#8a8a96" />
+                </div>
+
+                {/* Chips */}
+                <div style={{ display: 'flex', gap: '6px', marginBottom: '10px' }}>
+                  <span style={{ background: '#fff0f1', color: '#ea6a75', fontSize: '10px', fontWeight: 600, padding: '4px 8px', borderRadius: '12px' }}>📍 Near You</span>
+                  <span style={{ background: '#f8f8fa', color: '#686875', fontSize: '10px', fontWeight: 600, padding: '4px 8px', borderRadius: '12px' }}>📅 When?</span>
+                </div>
+
+                {/* Filter and Sort row */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', color: '#686875', marginBottom: '10px' }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><SlidersHorizontal size={12} /> Filters</span>
+                  <span>Sort by recommended ⌵</span>
+                </div>
+
+                {/* Salons list */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
+                  <div style={{ background: '#ffffff', borderRadius: '14px', padding: '10px', border: '1px solid #f2e2e0', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                      <div>
+                        <div style={{ fontWeight: 700, fontSize: '12px', color: '#1e1e24' }}>Alpha Beauty</div>
+                        <div style={{ fontSize: '10px', color: '#8a8a96' }}>Bengaluru &bull; Indiranagar</div>
+                        <div style={{ display: 'flex', gap: '4px', marginTop: '4px' }}>
+                          <span style={{ fontSize: '9px', background: '#fff0f1', color: '#ea6a75', padding: '2px 5px', borderRadius: '4px' }}>Nail salon</span>
+                          <span style={{ fontSize: '9px', background: '#fff0f1', color: '#ea6a75', padding: '2px 5px', borderRadius: '4px' }}>Pedicure</span>
+                        </div>
+                      </div>
+                      <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#ffd5d1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Heart size={11} fill="#ffffff" color="#ffffff" />
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
+                      <span style={{ fontSize: '10px', color: '#ea6a75', fontWeight: 700 }}>★★★★★ (351)</span>
+                      <button onClick={() => handleExplore(1002)} style={{ background: '#ea6a75', color: '#fff', border: 'none', borderRadius: '10px', padding: '3px 8px', fontSize: '10px', fontWeight: 600, cursor: 'pointer' }}>Book Now</button>
+                    </div>
+                  </div>
+
+                  <div style={{ background: '#ffffff', borderRadius: '14px', padding: '10px', border: '1px solid #f2e2e0' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                      <div>
+                        <div style={{ fontWeight: 700, fontSize: '12px', color: '#1e1e24' }}>Queen B Salon</div>
+                        <div style={{ fontSize: '10px', color: '#8a8a96' }}>Jaipur &bull; C-Scheme</div>
+                        <div style={{ display: 'flex', gap: '4px', marginTop: '4px' }}>
+                          <span style={{ fontSize: '9px', background: '#fff0f1', color: '#ea6a75', padding: '2px 5px', borderRadius: '4px' }}>Nail salon</span>
+                        </div>
+                      </div>
+                      <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#ffd5d1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Heart size={11} fill="#ffffff" color="#ffffff" />
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
+                      <span style={{ fontSize: '10px', color: '#ea6a75', fontWeight: 700 }}>★★★★☆ (128)</span>
+                      <button onClick={() => handleExplore(1003)} style={{ background: '#ea6a75', color: '#fff', border: 'none', borderRadius: '10px', padding: '3px 8px', fontSize: '10px', fontWeight: 600, cursor: 'pointer' }}>Book Now</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="bbeauty-phone-bottom-nav">
+                <HomeIcon size={16} />
+                <Search size={16} style={{ color: '#ea6a75' }} />
+                <Calendar size={16} />
+                <FileText size={16} />
+                <UserIcon size={16} />
+              </div>
             </div>
 
-            {/* Interactive Calendar Strip */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', textAlign: 'center', fontSize: '11px', color: '#8a8a96', marginBottom: '8px' }}>
-              <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
+            {/* Phone 2: Discover Home (Welcome Leslie!) */}
+            <div className="bbeauty-phone-frame">
+              <div className="bbeauty-phone-notch" />
+              <div className="bbeauty-phone-status-bar">
+                <span>9:41</span>
+                <span>BBeauty</span>
+              </div>
+              <div className="bbeauty-phone-body">
+                <div style={{ display: 'flex', alignItems: 'center', background: '#f8f8fa', borderRadius: '16px', padding: '6px 12px', gap: '8px', marginBottom: '12px' }}>
+                  <Search size={14} color="#ea6a75" />
+                  <span style={{ fontSize: '11px', color: '#8a8a96' }}>Search for service or salon...</span>
+                </div>
+
+                <div style={{ fontWeight: 800, fontSize: '16px', color: '#1e1e24', marginBottom: '10px' }}>
+                  Welcome Leslie!
+                </div>
+
+                {/* Categories */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', textAlign: 'center', marginBottom: '14px' }}>
+                  {['Hair', 'Nails', 'Spa', 'Skin'].map((c, i) => (
+                    <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+                      <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#fff0f1', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ea6a75', fontSize: '11px', fontWeight: 700 }}>
+                        {c[0]}
+                      </div>
+                      <span style={{ fontSize: '10px', color: '#4b4b56' }}>{c}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Popular */}
+                <div style={{ marginBottom: '12px' }}>
+                  <div style={{ fontSize: '12px', fontWeight: 700, color: '#1e1e24', marginBottom: '6px' }}>Popular</div>
+                  <div style={{ background: '#fff9f8', borderRadius: '12px', padding: '8px 10px', border: '1px solid #f6dedc', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: '11px', color: '#1e1e24' }}>Queen B Salon</div>
+                      <div style={{ fontSize: '10px', color: '#ea6a75' }}>★★★★★ (128)</div>
+                    </div>
+                    <button onClick={() => handleExplore(1003)} style={{ background: '#fff', border: '1px solid #ea6a75', color: '#ea6a75', borderRadius: '10px', padding: '2px 8px', fontSize: '9px', fontWeight: 600, cursor: 'pointer' }}>View more</button>
+                  </div>
+                </div>
+
+                {/* Places nearby */}
+                <div>
+                  <div style={{ fontSize: '12px', fontWeight: 700, color: '#1e1e24', marginBottom: '6px' }}>Places nearby</div>
+                  <div style={{ background: '#ffffff', borderRadius: '12px', padding: '8px', border: '1px solid #eee', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <img src={andrewSpaImg} alt="Bliss Spa" style={{ width: '42px', height: '42px', borderRadius: '8px', objectFit: 'cover' }} />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 700, fontSize: '11px', color: '#1e1e24' }}>Bliss Spa &amp; Lounge</div>
+                      <span style={{ fontSize: '9px', color: '#27ae60', fontWeight: 700 }}>● Available</span>
+                    </div>
+                    <button onClick={() => handleExplore(1001)} style={{ background: '#ea6a75', color: '#fff', border: 'none', borderRadius: '8px', padding: '3px 8px', fontSize: '9px', fontWeight: 600, cursor: 'pointer' }}>Book</button>
+                  </div>
+                </div>
+              </div>
+              <div className="bbeauty-phone-bottom-nav">
+                <HomeIcon size={16} style={{ color: '#ea6a75' }} />
+                <Search size={16} />
+                <Calendar size={16} />
+                <FileText size={16} />
+                <UserIcon size={16} />
+              </div>
             </div>
-            <div className="bbeauty-calendar-grid">
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14].map((day) => (
-                <div
-                  key={day}
-                  className={`bbeauty-calendar-day ${selectedCalendarDay === day ? 'selected' : ''}`}
-                  onClick={() => setSelectedCalendarDay(day)}
+
+            {/* Phone 3: My Appointments (Calendar) */}
+            <div className="bbeauty-phone-frame">
+              <div className="bbeauty-phone-notch" />
+              <div className="bbeauty-phone-status-bar">
+                <span>9:41</span>
+                <span>My Appointments</span>
+              </div>
+              <div className="bbeauty-phone-body">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <div style={{ fontWeight: 700, fontSize: '13px', color: '#1e1e24' }}>April, 2026 ⌵</div>
+                  <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#ea6a75', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Plus size={14} />
+                  </div>
+                </div>
+
+                {/* Days of week */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', textAlign: 'center', fontSize: '9px', color: '#8a8a96', marginBottom: '4px' }}>
+                  <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
+                </div>
+                {/* 14-day interactive grid */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '3px', textAlign: 'center', fontSize: '10px', marginBottom: '10px' }}>
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14].map((d) => (
+                    <div
+                      key={d}
+                      onClick={() => setSelectedCalendarDay(d)}
+                      style={{
+                        padding: '4px 0',
+                        borderRadius: '50%',
+                        cursor: 'pointer',
+                        fontWeight: selectedCalendarDay === d ? 700 : 500,
+                        background: selectedCalendarDay === d ? '#ea6a75' : 'transparent',
+                        color: selectedCalendarDay === d ? '#ffffff' : '#333'
+                      }}
+                    >
+                      {d}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Appointment Card */}
+                <div style={{ background: '#fff5f5', borderRadius: '14px', padding: '12px', border: '1px solid #f8e1e0', marginBottom: '10px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                    <span style={{ fontWeight: 700, fontSize: '12px', color: '#1e1e24' }}>Alpha Beauty</span>
+                    <span style={{ background: '#ea6a75', color: '#fff', fontSize: '9px', fontWeight: 700, padding: '2px 6px', borderRadius: '8px' }}>Confirmed</span>
+                  </div>
+                  <div style={{ fontSize: '10px', color: '#7a7a85', marginBottom: '4px' }}>
+                    Indiranagar, Bengaluru &bull; ★ 4.9
+                  </div>
+                  <div style={{ fontSize: '11px', fontWeight: 600, color: '#1e1e24' }}>
+                    Deluxe Gel Pedicure &amp; Signature Cut
+                  </div>
+                  <div style={{ fontSize: '10px', color: '#ea6a75', marginTop: '4px', fontWeight: 600 }}>
+                    April {selectedCalendarDay}, 2026 &bull; 11:30 AM
+                  </div>
+                </div>
+
+                <div style={{ fontSize: '11px', fontWeight: 700, color: '#1e1e24', marginBottom: '4px' }}>List of services</div>
+                <div style={{ fontSize: '10px', color: '#686875', lineHeight: 1.5 }}>
+                  ✓ Organic foot reflexology soak<br />
+                  ✓ Gel nail enamel &amp; precision buffing<br />
+                  ✓ Master styling &amp; blow-out finish
+                </div>
+              </div>
+              <div className="bbeauty-phone-bottom-nav">
+                <HomeIcon size={16} />
+                <Search size={16} />
+                <Calendar size={16} style={{ color: '#ea6a75' }} />
+                <FileText size={16} />
+                <UserIcon size={16} />
+              </div>
+            </div>
+
+            {/* Phone 4: Salon About Profile */}
+            <div className="bbeauty-phone-frame">
+              <div className="bbeauty-phone-notch" />
+              <div className="bbeauty-phone-status-bar">
+                <span>9:41</span>
+                <span>About</span>
+              </div>
+              <div className="bbeauty-phone-body">
+                <div style={{ height: '110px', borderRadius: '12px', overflow: 'hidden', marginBottom: '8px' }}>
+                  <img src={alphaBeautyImg} alt="Alpha Beauty" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </div>
+                <div style={{ fontWeight: 800, fontSize: '14px', color: '#1e1e24' }}>Alpha beauty</div>
+                <div style={{ fontSize: '10px', color: '#7a7a85', margin: '2px 0 4px' }}>100 Feet Road, Indiranagar, Bengaluru</div>
+                <div style={{ fontSize: '10px', color: '#ea6a75', fontWeight: 700, marginBottom: '6px' }}>★★★★★ 4.8 (210 reviews)</div>
+                <p style={{ fontSize: '10px', color: '#686875', lineHeight: 1.4, marginBottom: '8px' }}>
+                  Premier sanctuary for haute hair artistry, revitalizing skin facials, and luxury nail couture with certified stylists.
+                </p>
+                <div style={{ fontSize: '11px', fontWeight: 700, color: '#1e1e24', marginBottom: '4px' }}>List of services</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '10px', color: '#4b4b56' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Signature Haircut</span>
+                    <span style={{ fontWeight: 700, color: '#ea6a75' }}>₹650</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Gel Manicure &amp; Pedicure</span>
+                    <span style={{ fontWeight: 700, color: '#ea6a75' }}>₹950</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Radiant Skin Cleansing</span>
+                    <span style={{ fontWeight: 700, color: '#ea6a75' }}>₹1,400</span>
+                  </div>
+                </div>
+                <button
+                  onClick={() => handleExplore(1002)}
+                  style={{ marginTop: 'auto', background: '#ea6a75', color: '#fff', border: 'none', borderRadius: '12px', padding: '8px', fontSize: '11px', fontWeight: 700, cursor: 'pointer', textAlign: 'center', width: '100%' }}
                 >
-                  {day}
-                </div>
-              ))}
-            </div>
-
-            {/* Selected Booking Card */}
-            <div style={{ background: '#fff5f5', borderRadius: '16px', padding: '16px', border: '1px solid #f8e1e0', marginTop: '16px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                <span style={{ fontWeight: 700, fontSize: '14px', color: '#1e1e24' }}>Alpha Beauty &bull; Bengaluru</span>
-                <span style={{ background: '#ea6a75', color: '#fff', fontSize: '10px', fontWeight: 700, padding: '2px 8px', borderRadius: '10px' }}>
-                  Confirmed
-                </span>
+                  Book Appointment
+                </button>
               </div>
-              <div style={{ fontSize: '12px', color: '#666', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Clock size={12} style={{ color: '#ea6a75' }} />
-                <span>April {selectedCalendarDay}, 2026 &bull; 11:30 AM</span>
-              </div>
-              <div style={{ fontSize: '12px', color: '#1e1e24', fontWeight: 600, marginTop: '8px' }}>
-                Deluxe Gel Pedicure & Signature Cut
-              </div>
-            </div>
-
-            {/* Places Nearby */}
-            <div style={{ marginTop: '20px' }}>
-              <span style={{ fontSize: '13px', fontWeight: 700, color: '#1e1e24', display: 'block', marginBottom: '10px' }}>
-                Places nearby
-              </span>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: '#fcf8f8', borderRadius: '12px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#ffdcd7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ea6a75', fontWeight: 800 }}>
-                    B
-                  </div>
-                  <div>
-                    <div style={{ fontWeight: 600, fontSize: '13px', color: '#1e1e24' }}>Bliss Spa & Lounge</div>
-                    <div style={{ fontSize: '11px', color: '#7a7a85' }}>Indiranagar &bull; 4.8 ★</div>
-                  </div>
-                </div>
-                <span style={{ fontSize: '11px', color: '#27ae60', fontWeight: 700 }}>Available</span>
+              <div className="bbeauty-phone-bottom-nav">
+                <HomeIcon size={16} />
+                <Search size={16} />
+                <Calendar size={16} />
+                <FileText size={16} />
+                <UserIcon size={16} style={{ color: '#ea6a75' }} />
               </div>
             </div>
           </div>

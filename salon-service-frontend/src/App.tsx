@@ -101,32 +101,36 @@ function MainAppContent() {
         {renderActivePage()}
       </main>
 
-      <footer id="app-footer">
-        <div className="footer-content">
-          <div className="footer-brand">
-            <span className="logo-text">AURA</span>
-            <p>Redefining luxury salon and spa experiences in India through state-of-the-art care and seamless digital reservations.</p>
+      {activePage !== 'home' && (
+        <footer id="app-footer">
+          <div className="footer-content">
+            <div className="footer-brand">
+              <span className="logo-text" style={{ fontSize: '24px', fontWeight: 800, color: '#1e1e24' }}>
+                B<span style={{ color: '#ea6a75' }}>Beauty</span>
+              </span>
+              <p>India's premier digital sanctuary for luxury salon appointments and holistic self-care.</p>
+            </div>
+            <div className="footer-links">
+              <h4>Explore</h4>
+              <button className="footer-link-btn" onClick={() => navigate('home')}>Salon Locations</button>
+              <button className="footer-link-btn" onClick={() => navigate('home')}>Beauty Categories</button>
+            </div>
+            <div className="footer-links">
+              <h4>Partner Services</h4>
+              <button className="footer-link-btn" onClick={() => navigate('auth')}>Register as Owner</button>
+              <button className="footer-link-btn" onClick={() => navigate('auth')}>List Your Salon</button>
+            </div>
+            <div className="footer-contact">
+              <h4>Contact Us</h4>
+              <p><Phone size={14} style={{ display: 'inline', marginRight: '6px', verticalAlign: 'middle', color: '#ea6a75' }} /> +91 80 4123 7890</p>
+              <p><Mail size={14} style={{ display: 'inline', marginRight: '6px', verticalAlign: 'middle', color: '#ea6a75' }} /> concierge@bbeauty.in</p>
+            </div>
           </div>
-          <div className="footer-links">
-            <h4>Explore</h4>
-            <button className="footer-link-btn" onClick={() => navigate('home')}>Salon Locations</button>
-            <button className="footer-link-btn" onClick={() => navigate('home')}>Beauty Categories</button>
+          <div className="footer-bottom">
+            <p>&copy; 2026 BBeauty Platform. Crafted for modern elegance &amp; self-care.</p>
           </div>
-          <div className="footer-links">
-            <h4>Partner Services</h4>
-            <button className="footer-link-btn" onClick={() => navigate('auth')}>Register as Owner</button>
-            <button className="footer-link-btn" onClick={() => navigate('auth')}>List Your Salon</button>
-          </div>
-          <div className="footer-contact">
-            <h4>Contact Us</h4>
-            <p><Phone size={14} style={{ display: 'inline', marginRight: '6px', verticalAlign: 'middle' }} /> 1800-123-AURA (2872)</p>
-            <p><Mail size={14} style={{ display: 'inline', marginRight: '6px', verticalAlign: 'middle' }} /> concierge@aura-salon.com</p>
-          </div>
-        </div>
-        <div className="footer-bottom">
-          <p>&copy; 2026 AURA Inc. Crafted for modern elegance.</p>
-        </div>
-      </footer>
+        </footer>
+      )}
 
       <NotificationDrawer
         isOpen={notifDrawerOpen}
