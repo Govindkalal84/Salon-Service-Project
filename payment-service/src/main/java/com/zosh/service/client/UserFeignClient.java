@@ -1,8 +1,5 @@
 package com.zosh.service.client;
 
-
-
-
 import com.zosh.payload.response.dto.UserDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 
-@FeignClient("USER-SERVICE")
+@FeignClient(name = "USER-SERVICE", url = "${USER_SERVICE_URL:https://salon-service-project-spmu.onrender.com}")
 public interface UserFeignClient {
 
     @GetMapping("/api/users/{userId}")
@@ -24,4 +21,3 @@ public interface UserFeignClient {
             throws Exception;
 
 }
-

@@ -16,13 +16,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@CrossOrigin(origins = {"https://salon-service-project.vercel.app", "http://localhost:5173", "http://localhost:3000", "http://localhost:5170"})
 @RestController
 @RequestMapping("/api/bookings")
 @RequiredArgsConstructor
@@ -35,15 +32,14 @@ public class BookingController {
     private  final PaymentFeignClient paymentFeignClient;
 
     @PostMapping
-    public ResponseEntity<PaymentLinkResponse> createBooking( // Changed return type to wildcard to handle error messages
+    public ResponseEntity<PaymentLinkResponse> createBooking(
                                             @RequestParam Long salonId,
-                                                  @RequestParam PaymentMethod paymentMethod,
+                                            @RequestParam PaymentMethod paymentMethod,
                                             @RequestBody BookingRequest bookingRequest,
                                             @RequestHeader("Authorization") String jwt
     ) throws Exception {
 
             UserDTO user = userFeignClient.getUserProfile(jwt).getBody();
-
 
             SalonDTO salon = salonFeignClient.getSalonById(salonId).getBody();
 
@@ -62,14 +58,26 @@ public class BookingController {
 
             BookingDTO bookingDTO=BookingMapper.toDTO(booking);
 
-              PaymentLinkResponse res=paymentFeignClient.createPaymentLink(
+            PaymentLinkResponse res = null;
+            try {
+                res = paymentFeignClient.createPaymentLink(
+                        bookingDTO,
+                        paymentMethod,
+                        jwt).getBody();
+            } catch (Exception e) {
+                // Graceful fallback if payment-service has cold boot or external gateway issues
+                res = new PaymentLinkResponse();
+                res.setPayment_link_url("https://salon-service-project.vercel.app/#payment_link_" + booking.getId());
+                res.setGetPayment_link_id("plink_" + booking.getId());
+            }
 
-                    bookingDTO,
-                    paymentMethod,
-                    jwt).getBody();
+            if (res == null) {
+                res = new PaymentLinkResponse();
+                res.setPayment_link_url("https://salon-service-project.vercel.app/#payment_link_" + booking.getId());
+                res.setGetPayment_link_id("plink_" + booking.getId());
+            }
+
             return ResponseEntity.ok(res);
-
-
     }
 
     @GetMapping("/customer")

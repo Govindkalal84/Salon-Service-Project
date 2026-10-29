@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient("PAYMENT-SERVICE")
+@FeignClient(name = "PAYMENT-SERVICE", url = "${PAYMENT_SERVICE_URL:https://salon-service-project-yd58.onrender.com}")
 public interface PaymentFeignClient {
 
     @PostMapping("/api/payments/create")
