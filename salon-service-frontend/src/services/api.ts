@@ -6,6 +6,7 @@ export const BOOKING_SERVICE_URL = import.meta.env.VITE_BOOKING_SERVICE_URL || "
 export const GATEWAY_URL = import.meta.env.VITE_API_BASE_URL || "https://salon-service-project-ekud.onrender.com";
 export const SALON_SERVICE_URL = import.meta.env.VITE_SALON_SERVICE_URL || "https://salon-service-project-z307.onrender.com";
 export const SERVICE_OFFERING_URL = import.meta.env.VITE_SERVICE_OFFERING_URL || "https://salon-service-project-wv4y.onrender.com";
+export const PAYMENT_SERVICE_URL = import.meta.env.VITE_PAYMENT_SERVICE_URL || "https://salon-service-project-yd58.onrender.com";
 
 export const BASE_URL = GATEWAY_URL;
 
@@ -24,6 +25,9 @@ export function getBaseUrl(endpoint: string): string {
   }
   if (endpoint.startsWith('/api/service-offering')) {
     return SERVICE_OFFERING_URL;
+  }
+  if (endpoint.startsWith('/api/payments')) {
+    return PAYMENT_SERVICE_URL;
   }
   return GATEWAY_URL;
 }
