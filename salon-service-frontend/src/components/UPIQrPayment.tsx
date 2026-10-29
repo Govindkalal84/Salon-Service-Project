@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import QRCode from 'qrcode';
 import { apiRequest } from '../services/api';
 import { useAuth } from '../context/AuthContext';
-import { AlertCircle, QrCode, CheckCircle2, Copy, Check, ExternalLink, Zap, Edit2, Info } from 'lucide-react';
+import { AlertCircle, QrCode, CheckCircle2, Copy, Check, ExternalLink, Zap, Edit2, CreditCard, ShieldCheck } from 'lucide-react';
 
 interface UPIQrPaymentProps {
   bookingId: number;
@@ -98,6 +98,52 @@ export const UPIQrPayment: React.FC<UPIQrPaymentProps> = ({
     };
   }, [upiUrl]);
 
+  // Launch official Razorpay standard checkout popup
+  const handleOpenRazorpay = () => {
+    const launch = () => {
+      try {
+        const options = {
+          key: 'rzp_test_Shc0DpxrMa0ZCr',
+          amount: totalPrice * 100, // Amount in paise
+          currency: 'INR',
+          name: salonName,
+          description: `Salon Reservation #${bookingId}`,
+          image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=120',
+          handler: function (response: any) {
+            showToast(`Payment successful via Razorpay! ID: ${response.razorpay_payment_id}`, 'success');
+            handleConfirmPayment();
+          },
+          prefill: {
+            name: 'Valued Guest',
+            email: 'guest@bbeauty.in',
+            contact: '9876543210'
+          },
+          theme: {
+            color: '#ea6a75'
+          }
+        };
+        const rzp = new (window as any).Razorpay(options);
+        rzp.on('payment.failed', function (response: any) {
+          showToast('Payment failed: ' + (response.error?.description || 'Gateway error'), 'danger');
+        });
+        rzp.open();
+      } catch (e: any) {
+        console.error('Razorpay launch failed:', e);
+        showToast('Unable to open Razorpay gateway: ' + e.message, 'danger');
+      }
+    };
+
+    if (typeof (window as any).Razorpay === 'undefined') {
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = () => launch();
+      script.onerror = () => showToast('Failed to load Razorpay SDK. Please use direct UPI QR.', 'danger');
+      document.body.appendChild(script);
+    } else {
+      launch();
+    }
+  };
+
   // Countdown timer
   useEffect(() => {
     if (timeLeft <= 0) {
@@ -189,14 +235,45 @@ export const UPIQrPayment: React.FC<UPIQrPaymentProps> = ({
       {/* Title */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginBottom: '4px' }}>
         <Zap size={18} className="gold-text" fill="var(--gold-primary)" />
-        <h3 className="gold-text playfair" style={{ fontSize: '22px', margin: 0 }}>Instant UPI Payment</h3>
+        <h3 className="gold-text playfair" style={{ fontSize: '22px', margin: 0 }}>Secure Checkout</h3>
       </div>
       <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '14px' }}>
-        Scan QR or tap your UPI app to complete booking for <strong style={{ color: 'var(--text-primary)' }}>{salonName}</strong>
+        Complete payment for reservation at <strong style={{ color: 'var(--text-primary)' }}>{salonName}</strong>
       </p>
 
+      {/* Option 1: Official Razorpay Gateway (Guaranteed 100% PhonePe / GPay / Card Support) */}
+      <div style={{ marginBottom: '16px' }}>
+        <button
+          type="button"
+          onClick={handleOpenRazorpay}
+          className="btn btn-gold w-full"
+          style={{
+            padding: '12px 16px',
+            fontSize: '13px',
+            fontWeight: 700,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            boxShadow: '0 4px 15px rgba(212,175,55,0.25)'
+          }}
+        >
+          <CreditCard size={18} />
+          <span>Pay via Razorpay Gateway (PhonePe, GPay, Cards, NetBanking)</span>
+        </button>
+        <span style={{ fontSize: '10px', color: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', marginTop: '4px' }}>
+          <ShieldCheck size={12} /> Official RBI authorized payment gateway &bull; Works seamlessly on all UPI apps
+        </span>
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', margin: '14px 0', gap: '10px' }}>
+        <div style={{ flex: 1, height: '1px', background: 'var(--border-subtle)' }}></div>
+        <span style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>Or Direct UPI QR</span>
+        <div style={{ flex: 1, height: '1px', background: 'var(--border-subtle)' }}></div>
+      </div>
+
       {/* QR Code Container (Instant local render) */}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
         <div style={{ 
           display: 'inline-block', 
           padding: '12px', 
@@ -210,10 +287,10 @@ export const UPIQrPayment: React.FC<UPIQrPaymentProps> = ({
             <img 
               src={qrDataUrl} 
               alt="Scan QR to Pay via UPI" 
-              style={{ display: 'block', width: '190px', height: '190px', borderRadius: '8px' }}
+              style={{ display: 'block', width: '180px', height: '180px', borderRadius: '8px' }}
             />
           ) : (
-            <div style={{ width: '190px', height: '190px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#fcfcfc', borderRadius: '8px' }}>
+            <div style={{ width: '180px', height: '180px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#fcfcfc', borderRadius: '8px' }}>
               <div className="spinner" style={{ width: '28px', height: '28px', borderWidth: '3px', marginBottom: '8px' }}></div>
               <span style={{ fontSize: '11px', color: '#686875' }}>Generating Instant QR...</span>
             </div>
@@ -224,7 +301,7 @@ export const UPIQrPayment: React.FC<UPIQrPaymentProps> = ({
         <div style={{ 
           background: '#fff0f1', 
           border: '1px solid #ffd5d1', 
-          padding: '5px 14px', 
+          padding: '4px 12px', 
           borderRadius: '20px', 
           fontSize: '11px', 
           display: 'flex', 
@@ -239,46 +316,62 @@ export const UPIQrPayment: React.FC<UPIQrPaymentProps> = ({
         </div>
       </div>
 
-      {/* PhonePe / NPCI Live Testing Notice */}
-      {upiId === 'bbeauty.pay@icici' && (
-        <div style={{ 
-          background: 'rgba(255, 159, 10, 0.08)', 
-          border: '1px solid rgba(255, 159, 10, 0.3)', 
-          borderRadius: '10px', 
-          padding: '10px 12px', 
-          marginBottom: '14px',
-          textAlign: 'left',
-          fontSize: '11px',
-          color: '#92400e',
-          display: 'flex',
-          alignItems: 'flex-start',
-          gap: '8px'
-        }}>
-          <Info size={16} style={{ flexShrink: 0, marginTop: '2px', color: '#d97706' }} />
-          <div>
-            <strong>PhonePe "Unable to scan QR" Issue?</strong>
-            <p style={{ margin: '2px 0 6px 0', lineHeight: 1.4 }}>
-              PhonePe requires an active bank-linked UPI ID on NPCI. The default <code style={{ background: '#fef3c7', padding: '1px 4px', borderRadius: '4px' }}>bbeauty.pay@icici</code> is a placeholder.
-            </p>
+      {/* PhonePe Live Scanning Notice & Real UPI ID Setup */}
+      <div style={{ 
+        background: '#fffbeb', 
+        border: '1px solid #fde68a', 
+        borderRadius: '10px', 
+        padding: '10px 12px', 
+        marginBottom: '14px',
+        textAlign: 'left',
+        fontSize: '11px',
+        color: '#92400e'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+          <strong style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+            <span>⚠️</span> PhonePe Scanning Note:
+          </strong>
+          {!isEditingUpi && (
             <button
               type="button"
               onClick={() => { setIsEditingUpi(true); setUpiInputVal(upiId); }}
-              style={{
-                background: '#ea6a75',
-                color: '#ffffff',
-                border: 'none',
-                borderRadius: '6px',
-                padding: '4px 10px',
-                fontSize: '11px',
-                fontWeight: 600,
-                cursor: 'pointer'
-              }}
+              style={{ background: 'none', border: 'none', color: '#ea6a75', fontWeight: 700, fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px' }}
             >
-              ✏️ Enter Real UPI ID (To Test PhonePe / GPay)
+              <Edit2 size={12} />
+              <span>Change to My UPI ID</span>
             </button>
-          </div>
+          )}
         </div>
-      )}
+        <p style={{ margin: '2px 0 6px 0', lineHeight: 1.4 }}>
+          PhonePe strictly requires an active, registered bank account on NPCI. Current recipient: <code style={{ background: '#fef3c7', padding: '1px 5px', borderRadius: '4px', fontWeight: 700 }}>{upiId}</code>
+        </p>
+
+        {isEditingUpi && (
+          <form onSubmit={handleSaveCustomUpi} style={{ marginTop: '8px', background: '#ffffff', padding: '10px', borderRadius: '8px', border: '1px solid #fcd34d' }}>
+            <label style={{ fontSize: '11px', fontWeight: 700, color: '#111827', display: 'block', marginBottom: '4px' }}>
+              Enter Your Real UPI ID (e.g. mobile@ybl or yourname@oksbi):
+            </label>
+            <div style={{ display: 'flex', gap: '6px' }}>
+              <input
+                type="text"
+                className="form-control"
+                style={{ fontSize: '12px', padding: '5px 8px', height: '32px' }}
+                placeholder="9876543210@ybl"
+                value={upiInputVal}
+                onChange={(e) => setUpiInputVal(e.target.value)}
+                autoFocus
+                required
+              />
+              <button type="submit" className="btn btn-gold" style={{ fontSize: '11px', padding: '4px 12px', whiteSpace: 'nowrap' }}>
+                Update QR
+              </button>
+            </div>
+            <span style={{ fontSize: '10px', color: '#686875', marginTop: '4px', display: 'block' }}>
+              Once updated, PhonePe will resolve your real bank account and scan successfully!
+            </span>
+          </form>
+        )}
+      </div>
 
       {/* Quick Mobile App Deep Link */}
       <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginBottom: '14px', flexWrap: 'wrap' }}>
@@ -297,7 +390,7 @@ export const UPIQrPayment: React.FC<UPIQrPaymentProps> = ({
             borderColor: 'var(--gold-primary)'
           }}
         >
-          <span>Tap to Pay on Mobile</span>
+          <span>Tap to Open PhonePe / GPay App Directly</span>
           <ExternalLink size={11} />
         </a>
       </div>
@@ -312,13 +405,12 @@ export const UPIQrPayment: React.FC<UPIQrPaymentProps> = ({
         textAlign: 'left', 
         boxShadow: '0 2px 8px rgba(0,0,0,0.03)' 
       }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
           <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Amount Due:</span>
           <span style={{ fontWeight: 800, color: '#ea6a75', fontSize: '18px' }}>₹{totalPrice}</span>
         </div>
 
-        {/* UPI ID Row with Edit Option */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '4px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px', flexWrap: 'wrap', gap: '4px' }}>
           <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Recipient UPI ID:</span>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <span style={{ fontFamily: 'monospace', fontWeight: 700, fontSize: '12px', color: '#111827', background: '#f8f8fa', padding: '2px 6px', borderRadius: '4px', border: '1px solid #e5e7eb' }}>
@@ -332,44 +424,8 @@ export const UPIQrPayment: React.FC<UPIQrPaymentProps> = ({
             >
               {copied ? <Check size={14} /> : <Copy size={14} />}
             </button>
-            <button
-              type="button"
-              onClick={() => { setIsEditingUpi(!isEditingUpi); setUpiInputVal(upiId); }}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: '#ea6a75', display: 'flex', alignItems: 'center', gap: '2px', fontSize: '11px', fontWeight: 600 }}
-              title="Change UPI ID for live scanning"
-            >
-              <Edit2 size={13} />
-              <span>Change</span>
-            </button>
           </div>
         </div>
-
-        {/* Inline Edit Form for Real UPI ID */}
-        {isEditingUpi && (
-          <form onSubmit={handleSaveCustomUpi} style={{ marginTop: '8px', marginBottom: '8px', background: '#fff0f1', padding: '10px', borderRadius: '8px', border: '1px solid #ffd5d1' }}>
-            <label style={{ fontSize: '11px', fontWeight: 700, color: '#ea6a75', display: 'block', marginBottom: '4px' }}>
-              Enter Real UPI ID (PhonePe / GPay / Paytm):
-            </label>
-            <div style={{ display: 'flex', gap: '6px' }}>
-              <input
-                type="text"
-                className="form-control"
-                style={{ fontSize: '12px', padding: '5px 8px', height: '32px' }}
-                placeholder="e.g. mobile@ybl or name@oksbi"
-                value={upiInputVal}
-                onChange={(e) => setUpiInputVal(e.target.value)}
-                autoFocus
-                required
-              />
-              <button type="submit" className="btn btn-gold" style={{ fontSize: '11px', padding: '4px 12px', whiteSpace: 'nowrap' }}>
-                Update QR
-              </button>
-            </div>
-            <span style={{ fontSize: '10px', color: '#686875', marginTop: '4px', display: 'block' }}>
-              Updates the QR code instantly so PhonePe can resolve your real bank account.
-            </span>
-          </form>
-        )}
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Reservation Ref:</span>
@@ -410,7 +466,7 @@ export const UPIQrPayment: React.FC<UPIQrPaymentProps> = ({
           ) : (
             <>
               <CheckCircle2 size={16} />
-              <span>I Have Paid via UPI — Confirm</span>
+              <span>I Have Paid via UPI — Confirm Booking</span>
             </>
           )}
         </button>
