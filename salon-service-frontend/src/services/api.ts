@@ -1,4 +1,4 @@
-import { mockApiRequest, isDemoModeActive, setDemoModeActive } from './mockApi';
+import { mockApiRequest, isDemoModeActive } from './mockApi';
 
 export const USER_SERVICE_URL = import.meta.env.VITE_USER_SERVICE_URL || "https://salon-service-project-spmu.onrender.com";
 export const CATEGORY_SERVICE_URL = import.meta.env.VITE_CATEGORY_SERVICE_URL || "https://salon-service-project-wpp6.onrender.com";
@@ -46,15 +46,13 @@ export const getInitialAuthState = (): AuthState => {
 };
 
 let globalLogoutHandler: (() => void) | null = null;
-let globalFailoverPromptActive = false;
-let globalFailoverCallback: ((useDemo: boolean) => void) | null = null;
 
 export const registerLogoutHandler = (handler: () => void) => {
   globalLogoutHandler = handler;
 };
 
-export const registerFailoverListener = (callback: (useDemo: boolean) => void) => {
-  globalFailoverCallback = callback;
+export const registerFailoverListener = (_callback: (useDemo: boolean) => void) => {
+  // Demo mode auto-failover disabled as requested
 };
 
 // Unified API Request helper
@@ -84,8 +82,18 @@ export async function apiRequest(endpoint: string, options: any = {}): Promise<a
     options.body = JSON.stringify(options.body);
   }
   
+  const controller = new AbortController();
+  const isRead = !options.method || options.method === 'GET';
+  const timeoutMs = options.timeout || (isRead ? 10000 : 30000);
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  
+  if (!options.signal) {
+    options.signal = controller.signal;
+  }
+
   try {
     let response = await fetch(url, options);
+    clearTimeout(timeoutId);
     
     // Handle token expiration / unauthorized
     if (response.status === 401) {
@@ -108,14 +116,8 @@ export async function apiRequest(endpoint: string, options: any = {}): Promise<a
     }
     
     if (!response.ok) {
-      // Handle offline/gateway errors by prompting Demo Mode
       if (response.status === 503 || response.status === 502 || response.status === 504) {
-        if (!options.noFailover) {
-          handleFailoverPrompt(`The backend service is sleeping or unavailable (Status ${response.status}).`);
-          throw new Error("DEMO_MODE_ACTIVATED");
-        } else {
-          throw new Error(`HTTP_ERROR: Status ${response.status}`);
-        }
+        throw new Error(`The backend service is currently waking up (Status ${response.status}). Please try again in a few moments.`);
       }
       
       const errorText = await response.text();
@@ -149,25 +151,17 @@ export async function apiRequest(endpoint: string, options: any = {}): Promise<a
     }
     
   } catch (error: any) {
+    clearTimeout(timeoutId);
     console.error(`API Request Error [${endpoint}]:`, error);
     
-    if (error.message === "DEMO_MODE_ACTIVATED") {
-      throw error;
+    if (error.name === 'AbortError') {
+      throw new Error("Request timed out waiting for backend. Please retry.");
     }
     
     if (error.message && error.message.startsWith("HTTP_ERROR: ")) {
       throw new Error(error.message.replace("HTTP_ERROR: ", ""));
     }
     
-    // Network or other fetch error
-    if (!options.noFailover) {
-      console.warn(`[BBeauty API] Network issue on [${endpoint}]: (${error.message || "Offline"}). Seamlessly serving cached/demo data.`);
-      setDemoModeActive(true);
-      if (globalFailoverCallback) {
-        globalFailoverCallback(true);
-      }
-      return mockApiRequest(endpoint, options);
-    }
     throw new Error(error.message || "Network Error");
   }
 }
@@ -186,18 +180,4 @@ async function attemptTokenRefresh(refreshToken: string): Promise<boolean> {
     console.error("Refresh token request failed", e);
   }
   return false;
-}
-
-// Triggers failover prompt callbacks
-function handleFailoverPrompt(reason: string) {
-  if (globalFailoverPromptActive) return;
-  globalFailoverPromptActive = true;
-  console.info(`[BBeauty Failover] ${reason} - seamlessly operating in high-speed local mode.`);
-  setDemoModeActive(true);
-  if (globalFailoverCallback) {
-    globalFailoverCallback(true);
-  }
-  setTimeout(() => {
-    globalFailoverPromptActive = false;
-  }, 1000);
 }

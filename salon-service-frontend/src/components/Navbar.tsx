@@ -139,26 +139,48 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, activePage, onToggle
         </nav>
 
         <div className="nav-actions">
-          {/* Demo Mode Toggle */}
-          <button
-            onClick={() => toggleDemoMode()}
-            style={{
-              background: demoMode ? '#fff0f1' : '#f8f8fa',
-              border: demoMode ? '1px solid #ea6a75' : '1px solid #e8e8ee',
-              borderRadius: '20px',
-              padding: '6px 13px',
-              fontSize: '12px',
-              fontWeight: 600,
-              color: demoMode ? '#ea6a75' : '#7a7a85',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              cursor: 'pointer'
-            }}
-          >
-            <PlayCircle size={15} style={{ color: demoMode ? '#ea6a75' : '#9a9aa8' }} />
-            <span>Demo: {demoMode ? 'ON' : 'OFF'}</span>
-          </button>
+          {/* Demo Mode Toggle / Live Backend Indicator */}
+          {demoMode ? (
+            <button
+              onClick={() => toggleDemoMode(false)}
+              title="Click to turn off Demo Mode and connect to Live Microservices"
+              style={{
+                background: '#fff0f1',
+                border: '1px solid #ea6a75',
+                borderRadius: '20px',
+                padding: '6px 13px',
+                fontSize: '12px',
+                fontWeight: 600,
+                color: '#ea6a75',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                cursor: 'pointer'
+              }}
+            >
+              <PlayCircle size={15} style={{ color: '#ea6a75' }} />
+              <span>Turn Demo Mode OFF</span>
+            </button>
+          ) : (
+            <div
+              title="Connected to Live Cloud Microservices"
+              style={{
+                background: '#f0fdf4',
+                border: '1px solid #bbf7d0',
+                borderRadius: '20px',
+                padding: '6px 13px',
+                fontSize: '12px',
+                fontWeight: 600,
+                color: '#15803d',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+            >
+              <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#16a34a', display: 'inline-block' }}></span>
+              <span>Live Backend</span>
+            </div>
+          )}
 
           {/* Notification Bell (Dribbble icon) */}
           <button

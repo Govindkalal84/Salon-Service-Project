@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { apiRequest, getInitialAuthState, registerLogoutHandler, registerFailoverListener } from '../services/api';
+import { apiRequest, getInitialAuthState, registerLogoutHandler } from '../services/api';
 import { isDemoModeActive, setDemoModeActive, initDemoDatabase } from '../services/mockApi';
 
 export interface UserProfile {
@@ -45,7 +45,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [auth, setAuth] = useState(getInitialAuthState());
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [demoMode, setDemoMode] = useState(isDemoModeActive());
+  const [demoMode, setDemoMode] = useState<boolean>(false);
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'warning' | 'danger' | 'info' } | null>(null);
@@ -56,6 +56,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setTimeout(() => {
       setToast(prev => prev?.message === message ? null : prev);
     }, 4000);
+  }, []);
+
+  // Ensure Demo Mode is explicitly OFF by default
+  useEffect(() => {
+    localStorage.setItem("demo_mode", "false");
+    setDemoMode(false);
   }, []);
 
   const logout = useCallback(() => {
@@ -96,13 +102,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     showToast(`Switched to ${nextVal ? 'Local Demo' : 'Live Gateway'} Mode`, "success");
   }, [demoMode, showToast]);
 
-  // Hook into api.ts logout and failover handlers
+  // Hook into api.ts logout handler
   useEffect(() => {
     registerLogoutHandler(logout);
-    registerFailoverListener((useDemo) => {
-      toggleDemoMode(useDemo);
-    });
-  }, [logout, toggleDemoMode]);
+  }, [logout]);
 
   const fetchUserProfile = useCallback(async () => {
     if (!auth.jwt && !isDemoModeActive()) return;
@@ -115,18 +118,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     } catch (e: any) {
       console.error("Failed to load user profile", e);
-      if (e.message === "DEMO_MODE_ACTIVATED") {
-        toggleDemoMode(true);
-      }
     }
-  }, [auth.jwt, auth.role, toggleDemoMode]);
+  }, [auth.jwt, auth.role]);
 
   const fetchNotifications = useCallback(async () => {
     if (!userProfile) return;
     try {
       let endpoint = `/api/notifications/user/${userProfile.id}`;
       if (userProfile.role === 'SALON_OWNER') {
-        // Find owner's salon first
         const salon = await apiRequest("/api/salons/owner", { noFailover: true });
         if (salon) {
           endpoint = `/api/notifications/salon-owner/salon/${salon.id}`;
@@ -136,11 +135,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setNotifications(Array.isArray(data) ? data : []);
     } catch (e: any) {
       console.error("Notifications fetch failed", e);
-      if (e.message === "DEMO_MODE_ACTIVATED") {
-        toggleDemoMode(true);
-      }
     }
-  }, [userProfile, toggleDemoMode]);
+  }, [userProfile]);
 
   const markNotificationRead = async (id: number) => {
     try {
@@ -150,9 +146,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       );
     } catch (e: any) {
       console.error("Mark notification read failed", e);
-      if (e.message === "DEMO_MODE_ACTIVATED") {
-        toggleDemoMode(true);
-      }
     }
   };
 
@@ -175,14 +168,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         role: data.role || "CUSTOMER"
       });
       
-      showToast("Access Granted. Welcome to AURA!", "success");
+      showToast("Access Granted. Welcome to BBeauty!", "success");
       setLoading(false);
       return data;
     } catch (e: any) {
       setLoading(false);
-      if (e.message !== "DEMO_MODE_ACTIVATED") {
-        throw e;
-      }
+      throw e;
     }
   };
 
@@ -210,9 +201,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return data;
     } catch (e: any) {
       setLoading(false);
-      if (e.message !== "DEMO_MODE_ACTIVATED") {
-        throw e;
-      }
+      throw e;
     }
   };
 
@@ -229,7 +218,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       fetchNotifications();
       const interval = setInterval(() => {
         fetchNotifications();
-      }, 10000);
+      }, 15000);
       return () => clearInterval(interval);
     }
   }, [userProfile, fetchNotifications]);
