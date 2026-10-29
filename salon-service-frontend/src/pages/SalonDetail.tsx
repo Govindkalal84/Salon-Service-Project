@@ -564,6 +564,7 @@ export const SalonDetail: FC<SalonDetailProps> = ({ salonId, onNavigate }) => {
                   totalPrice={totalPrice}
                   paymentLinkId={createdBooking.paymentLinkId}
                   salonName={salon.name}
+                  salonId={salon.id}
                   onPaymentSuccess={() => {
                     setBookingModalOpen(false);
                     onNavigate('customer-dashboard');

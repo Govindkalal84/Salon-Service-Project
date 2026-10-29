@@ -2,13 +2,14 @@ import { useState, useEffect } from 'react';
 import QRCode from 'qrcode';
 import { apiRequest } from '../services/api';
 import { useAuth } from '../context/AuthContext';
-import { AlertCircle, QrCode, CheckCircle2, Copy, Check, ExternalLink, Zap } from 'lucide-react';
+import { AlertCircle, QrCode, CheckCircle2, Copy, Check, ExternalLink, Zap, Edit2, Info } from 'lucide-react';
 
 interface UPIQrPaymentProps {
   bookingId: number;
   totalPrice: number; // in INR
   paymentLinkId: string;
   salonName?: string;
+  salonId?: number;
   onPaymentSuccess: () => void;
   onCancel: () => void;
 }
@@ -18,6 +19,7 @@ export const UPIQrPayment: React.FC<UPIQrPaymentProps> = ({
   totalPrice,
   paymentLinkId,
   salonName = 'BBeauty Luxury Salon',
+  salonId,
   onPaymentSuccess,
   onCancel
 }) => {
@@ -27,10 +29,47 @@ export const UPIQrPayment: React.FC<UPIQrPaymentProps> = ({
   const [copied, setCopied] = useState(false);
   const [qrDataUrl, setQrDataUrl] = useState<string>('');
 
-  const upiId = 'bbeauty.pay@icici';
-  const cleanSalonName = encodeURIComponent(salonName.replace(/[^a-zA-Z0-9 ]/g, ''));
-  // Dynamic standard UPI URL format accepted by GPay, PhonePe, Paytm, BHIM, Cred
-  const upiUrl = `upi://pay?pa=${upiId}&pn=${cleanSalonName}&am=${totalPrice}&cu=INR&tn=RSV-${bookingId}`;
+  // Priority order for UPI ID:
+  // 1. Explicitly saved custom UPI ID in localStorage
+  // 2. Salon-specific bank profile UPI ID
+  // 3. Active salon owner bank profile UPI ID
+  // 4. Default placeholder
+  const getInitialUpiId = () => {
+    try {
+      const custom = localStorage.getItem('bbeauty_custom_upi_id');
+      if (custom && custom.trim().includes('@')) return custom.trim();
+
+      if (salonId) {
+        const salonBank = localStorage.getItem(`bbeauty_owner_bank_${salonId}`);
+        if (salonBank) {
+          const parsed = JSON.parse(salonBank);
+          if (parsed.upiId && parsed.upiId.trim().includes('@')) return parsed.upiId.trim();
+        }
+      }
+
+      const ownerBank = localStorage.getItem('bbeauty_owner_bank_active');
+      if (ownerBank) {
+        const parsed = JSON.parse(ownerBank);
+        if (parsed.upiId && parsed.upiId.trim().includes('@')) return parsed.upiId.trim();
+      }
+    } catch {}
+    return 'bbeauty.pay@icici';
+  };
+
+  const [upiId, setUpiId] = useState<string>(getInitialUpiId);
+  const [isEditingUpi, setIsEditingUpi] = useState<boolean>(false);
+  const [upiInputVal, setUpiInputVal] = useState<string>(upiId);
+
+  // Clean alphanumeric salon name (max 25 characters per NPCI specs)
+  const cleanSalonName = encodeURIComponent(
+    salonName.replace(/[^a-zA-Z0-9 ]/g, '').substring(0, 25).trim() || 'Salon'
+  );
+
+  // Clean reference without special characters/hyphens for maximum PSP compatibility
+  const cleanRef = `RSV${bookingId}`;
+
+  // Standard NPCI UPI URI scheme compatible with PhonePe, Google Pay, Paytm, BHIM, CRED
+  const upiUrl = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${cleanSalonName}&am=${totalPrice}&cu=INR&tn=${cleanRef}&tr=${cleanRef}`;
 
   // Instant local QR code generation (0 ms latency, no external network request required)
   useEffect(() => {
@@ -83,6 +122,19 @@ export const UPIQrPayment: React.FC<UPIQrPaymentProps> = ({
     setCopied(true);
     showToast("UPI ID copied to clipboard!", "info");
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleSaveCustomUpi = (e: React.FormEvent) => {
+    e.preventDefault();
+    const clean = upiInputVal.trim();
+    if (!clean.includes('@') || clean.length < 5) {
+      showToast("Please enter a valid UPI ID (e.g. mobile@ybl, name@oksbi)", "warning");
+      return;
+    }
+    setUpiId(clean);
+    localStorage.setItem('bbeauty_custom_upi_id', clean);
+    setIsEditingUpi(false);
+    showToast(`UPI ID updated to ${clean}! QR code regenerated for PhonePe/GPay.`, "success");
   };
 
   const handleConfirmPayment = async () => {
@@ -183,11 +235,52 @@ export const UPIQrPayment: React.FC<UPIQrPaymentProps> = ({
           fontWeight: 600 
         }}>
           <QrCode size={13} />
-          <span>GPay &bull; PhonePe &bull; Paytm &bull; BHIM &bull; CRED</span>
+          <span>PhonePe &bull; Google Pay &bull; Paytm &bull; BHIM &bull; CRED</span>
         </div>
       </div>
 
-      {/* Quick Mobile App Deep Links */}
+      {/* PhonePe / NPCI Live Testing Notice */}
+      {upiId === 'bbeauty.pay@icici' && (
+        <div style={{ 
+          background: 'rgba(255, 159, 10, 0.08)', 
+          border: '1px solid rgba(255, 159, 10, 0.3)', 
+          borderRadius: '10px', 
+          padding: '10px 12px', 
+          marginBottom: '14px',
+          textAlign: 'left',
+          fontSize: '11px',
+          color: '#92400e',
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: '8px'
+        }}>
+          <Info size={16} style={{ flexShrink: 0, marginTop: '2px', color: '#d97706' }} />
+          <div>
+            <strong>PhonePe "Unable to scan QR" Issue?</strong>
+            <p style={{ margin: '2px 0 6px 0', lineHeight: 1.4 }}>
+              PhonePe requires an active bank-linked UPI ID on NPCI. The default <code style={{ background: '#fef3c7', padding: '1px 4px', borderRadius: '4px' }}>bbeauty.pay@icici</code> is a placeholder.
+            </p>
+            <button
+              type="button"
+              onClick={() => { setIsEditingUpi(true); setUpiInputVal(upiId); }}
+              style={{
+                background: '#ea6a75',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '6px',
+                padding: '4px 10px',
+                fontSize: '11px',
+                fontWeight: 600,
+                cursor: 'pointer'
+              }}
+            >
+              ✏️ Enter Real UPI ID (To Test PhonePe / GPay)
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Quick Mobile App Deep Link */}
       <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginBottom: '14px', flexWrap: 'wrap' }}>
         <a
           href={upiUrl}
@@ -219,24 +312,65 @@ export const UPIQrPayment: React.FC<UPIQrPaymentProps> = ({
         textAlign: 'left', 
         boxShadow: '0 2px 8px rgba(0,0,0,0.03)' 
       }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
           <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Amount Due:</span>
           <span style={{ fontWeight: 800, color: '#ea6a75', fontSize: '18px' }}>₹{totalPrice}</span>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-          <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>UPI ID:</span>
+
+        {/* UPI ID Row with Edit Option */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '4px' }}>
+          <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Recipient UPI ID:</span>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ fontFamily: 'monospace', fontWeight: 600, fontSize: '12px', color: '#111827' }}>{upiId}</span>
+            <span style={{ fontFamily: 'monospace', fontWeight: 700, fontSize: '12px', color: '#111827', background: '#f8f8fa', padding: '2px 6px', borderRadius: '4px', border: '1px solid #e5e7eb' }}>
+              {upiId}
+            </span>
             <button
               type="button"
               onClick={handleCopyUpi}
               style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: copied ? 'var(--color-success)' : '#ea6a75' }}
               title="Copy UPI ID"
             >
-              {copied ? <Check size={13} /> : <Copy size={13} />}
+              {copied ? <Check size={14} /> : <Copy size={14} />}
+            </button>
+            <button
+              type="button"
+              onClick={() => { setIsEditingUpi(!isEditingUpi); setUpiInputVal(upiId); }}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: '#ea6a75', display: 'flex', alignItems: 'center', gap: '2px', fontSize: '11px', fontWeight: 600 }}
+              title="Change UPI ID for live scanning"
+            >
+              <Edit2 size={13} />
+              <span>Change</span>
             </button>
           </div>
         </div>
+
+        {/* Inline Edit Form for Real UPI ID */}
+        {isEditingUpi && (
+          <form onSubmit={handleSaveCustomUpi} style={{ marginTop: '8px', marginBottom: '8px', background: '#fff0f1', padding: '10px', borderRadius: '8px', border: '1px solid #ffd5d1' }}>
+            <label style={{ fontSize: '11px', fontWeight: 700, color: '#ea6a75', display: 'block', marginBottom: '4px' }}>
+              Enter Real UPI ID (PhonePe / GPay / Paytm):
+            </label>
+            <div style={{ display: 'flex', gap: '6px' }}>
+              <input
+                type="text"
+                className="form-control"
+                style={{ fontSize: '12px', padding: '5px 8px', height: '32px' }}
+                placeholder="e.g. mobile@ybl or name@oksbi"
+                value={upiInputVal}
+                onChange={(e) => setUpiInputVal(e.target.value)}
+                autoFocus
+                required
+              />
+              <button type="submit" className="btn btn-gold" style={{ fontSize: '11px', padding: '4px 12px', whiteSpace: 'nowrap' }}>
+                Update QR
+              </button>
+            </div>
+            <span style={{ fontSize: '10px', color: '#686875', marginTop: '4px', display: 'block' }}>
+              Updates the QR code instantly so PhonePe can resolve your real bank account.
+            </span>
+          </form>
+        )}
+
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Reservation Ref:</span>
           <span style={{ fontWeight: 700, fontSize: '12px', fontFamily: 'monospace', color: '#111827' }}>RSV-{bookingId}</span>
