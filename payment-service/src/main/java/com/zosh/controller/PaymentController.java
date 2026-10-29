@@ -33,7 +33,7 @@ public class PaymentController {
         } catch (Exception e) {
             // Graceful fallback user if User service call has issues
             user = new UserDTO();
-            user.setId(booking.getCustomer() != null ? booking.getCustomer().getId() : 1L);
+            user.setId(booking.getCustomerId() != null ? booking.getCustomerId() : 1L);
             user.setFullName("Valued Guest");
             user.setEmail("guest@bbeauty.in");
         }
