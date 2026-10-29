@@ -4,12 +4,33 @@ import { useAuth } from '../context/AuthContext';
 import { DEFAULT_MOCK_SALONS, DEFAULT_MOCK_SERVICES, type Salon, type Service } from '../services/mockApi';
 import { ReviewSection } from '../components/ReviewSection';
 import { UPIQrPayment } from '../components/UPIQrPayment';
-import { Clock, MapPin, Phone, Star, Calendar, ArrowRight, X, ChevronLeft } from 'lucide-react';
+import { GoogleMapEmbed } from '../components/GoogleMapEmbed';
+import { Clock, MapPin, Phone, Star, Calendar, ArrowRight, X, ChevronLeft, ExternalLink } from 'lucide-react';
 
 interface SalonDetailProps {
   salonId: number;
   onNavigate: (page: string, params?: any) => void;
 }
+
+const getStateByCity = (city: string) => {
+  const map: Record<string, string> = {
+    'Mumbai': 'Maharashtra',
+    'Bengaluru': 'Karnataka',
+    'Bangalore': 'Karnataka',
+    'Jaipur': 'Rajasthan',
+    'New Delhi': 'Delhi NCR',
+    'Delhi': 'Delhi NCR',
+    'Hyderabad': 'Telangana',
+    'Chennai': 'Tamil Nadu',
+    'Kolkata': 'West Bengal',
+    'Pune': 'Maharashtra',
+    'Goa': 'Goa',
+    'Ahmedabad': 'Gujarat',
+    'Noida': 'Uttar Pradesh',
+    'Gurgaon': 'Haryana'
+  };
+  return map[city] || 'India';
+};
 
 export const SalonDetail: FC<SalonDetailProps> = ({ salonId, onNavigate }) => {
   const { user, showToast } = useAuth();
@@ -224,6 +245,10 @@ export const SalonDetail: FC<SalonDetailProps> = ({ salonId, onNavigate }) => {
     );
   }
 
+  const stateName = salon.state || getStateByCity(salon.city);
+  const mapsQuery = [salon.name, salon.address, salon.city, stateName, 'India'].filter(Boolean).join(', ');
+  const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapsQuery)}`;
+
   return (
     <div className="bbeauty-salon-detail-page">
       {/* Top Breadcrumb Navigation */}
@@ -249,10 +274,31 @@ export const SalonDetail: FC<SalonDetailProps> = ({ salonId, onNavigate }) => {
             <ChevronLeft size={16} />
             <span>Back to BBeauty Home</span>
           </button>
-          <div style={{ fontSize: '13px', color: '#686875', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ color: '#ea6a75', fontWeight: 700 }}>{salon.city}, {salon.state}</span>
+          <div style={{ fontSize: '13px', color: '#686875', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            <span style={{ color: '#ea6a75', fontWeight: 700 }}>{salon.city}, {stateName}</span>
             <span>&bull;</span>
             <span>{salon.address}</span>
+            <a
+              href={googleMapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="View on Google Maps"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px',
+                color: '#ea6a75',
+                background: '#fff0f1',
+                padding: '2px 8px',
+                borderRadius: '12px',
+                fontSize: '11px',
+                fontWeight: 600,
+                textDecoration: 'none'
+              }}
+            >
+              <MapPin size={11} />
+              <span>Google Maps ↗</span>
+            </a>
           </div>
         </div>
       </div>
@@ -324,9 +370,29 @@ export const SalonDetail: FC<SalonDetailProps> = ({ salonId, onNavigate }) => {
         {/* Reservation Sidebar Panel */}
         <div className="sidebar-panel">
           <h3>Reservation Summary</h3>
-          <div className="info-item">
-            <MapPin size={16} />
-            <span>{salon.address}, {salon.city} ({salon.state})</span>
+          <div className="info-item" style={{ alignItems: 'flex-start' }}>
+            <MapPin size={16} style={{ color: '#ea6a75', marginTop: '2px', flexShrink: 0 }} />
+            <div style={{ flex: 1 }}>
+              <div>{salon.address}, {salon.city} ({stateName})</div>
+              <a
+                href={googleMapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  fontSize: '11px',
+                  fontWeight: 700,
+                  color: '#ea6a75',
+                  textDecoration: 'none',
+                  marginTop: '4px'
+                }}
+              >
+                <span>View on Google Maps</span>
+                <ExternalLink size={11} />
+              </a>
+            </div>
           </div>
           <div className="info-item">
             <Clock size={16} />
@@ -356,6 +422,21 @@ export const SalonDetail: FC<SalonDetailProps> = ({ salonId, onNavigate }) => {
             </button>
           </div>
         </div>
+      </div>
+
+      {/* Dedicated Interactive Google Maps Section */}
+      <div className="container" style={{ marginTop: '30px', marginBottom: '60px' }}>
+        <GoogleMapEmbed
+          salonName={salon.name}
+          address={salon.address}
+          city={salon.city}
+          state={stateName}
+          phoneNumber={salon.phoneNumber}
+          openTime={salon.openTime}
+          closeTime={salon.closeTime}
+          height="380px"
+          title="Exact Location & Google Maps Directions"
+        />
       </div>
 
       {/* Booking Checkout Modal */}

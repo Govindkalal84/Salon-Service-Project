@@ -52,7 +52,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, activePage, onToggle
               }, 100);
             }}
           >
-            Services
+            Salons
           </button>
           <button
             className="nav-link-btn nav-link"
@@ -64,7 +64,19 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, activePage, onToggle
               }, 100);
             }}
           >
-            Blog
+            Categories
+          </button>
+          <button
+            className="nav-link-btn nav-link"
+            onClick={() => {
+              handleNav('home');
+              setTimeout(() => {
+                const el = document.getElementById('google-maps-hubs-section');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }, 100);
+            }}
+          >
+            Locations 📍
           </button>
           <button
             className="nav-link-btn nav-link"

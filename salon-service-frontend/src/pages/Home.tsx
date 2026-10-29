@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef, type FC } from 'react';
 import { apiRequest } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import type { Salon } from '../services/mockApi';
+import { GoogleMapEmbed } from '../components/GoogleMapEmbed';
 import { 
   Search, 
   MapPin, 
@@ -11,12 +12,11 @@ import {
   ChevronRight, 
   Sparkles, 
   Calendar, 
-  Mic,
+  Mic, 
   SlidersHorizontal,
   Home as HomeIcon,
   FileText,
-  User as UserIcon,
-  Plus
+  User as UserIcon
 } from 'lucide-react';
 
 import bbeautyHeroImg from '../assets/bbeauty_hero.jpg';
@@ -67,6 +67,7 @@ export const Home: FC<HomeProps> = ({ onNavigate }) => {
 
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [selectedCalendarDay, setSelectedCalendarDay] = useState(8);
+  const [selectedMapCity, setSelectedMapCity] = useState("Mumbai");
 
   const carouselRef = useRef<HTMLDivElement>(null);
 
@@ -150,6 +151,57 @@ export const Home: FC<HomeProps> = ({ onNavigate }) => {
       phone: "+91 141 236 8920"
     }
   ];
+
+  // Verified Salon Locations for Interactive Google Maps Hub
+  const mapLocations = [
+    {
+      city: "Mumbai",
+      state: "Maharashtra",
+      name: "Andrew Beauty Spa",
+      address: "Bandra West, Link Road",
+      phone: "+91 22 4982 7100",
+      openTime: "09:00",
+      closeTime: "21:00"
+    },
+    {
+      city: "Bengaluru",
+      state: "Karnataka",
+      name: "Alpha beauty / Luxe Nirvana Lounge",
+      address: "100 Feet Road, Indiranagar",
+      phone: "+91 80 4123 7890",
+      openTime: "10:00",
+      closeTime: "20:30"
+    },
+    {
+      city: "Jaipur",
+      state: "Rajasthan",
+      name: "Queen B Salon / Velvet Royale Studio",
+      address: "Ashok Marg, C-Scheme",
+      phone: "+91 141 236 8920",
+      openTime: "09:30",
+      closeTime: "21:00"
+    },
+    {
+      city: "New Delhi",
+      state: "Delhi NCR",
+      name: "Urban Crown Hair Studio",
+      address: "Inner Circle, Connaught Place",
+      phone: "+91 11 4872 3100",
+      openTime: "10:00",
+      closeTime: "21:00"
+    },
+    {
+      city: "Hyderabad",
+      state: "Telangana",
+      name: "Aura Glamour Sanctuary",
+      address: "Road No. 36, Jubilee Hills",
+      phone: "+91 40 2355 9840",
+      openTime: "09:30",
+      closeTime: "21:30"
+    }
+  ];
+
+  const activeMapLocation = mapLocations.find(l => l.city === selectedMapCity) || mapLocations[0];
 
   // Load Salons from backend
   const loadSalons = useCallback(async (filterCity = '') => {
@@ -342,9 +394,12 @@ export const Home: FC<HomeProps> = ({ onNavigate }) => {
           </div>
         )}
         <div className="bbeauty-salon-grid" ref={carouselRef}>
-          {/* Card 1: Andrew Beauty Spa */}
+          {/* Dribbble Curated Salons */}
           {dribbbleFeaturedSalons.map((item) => {
             const isFav = !!favorites[item.id];
+            const mapsQuery = [item.name, item.address, item.city, item.state, 'India'].filter(Boolean).join(', ');
+            const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapsQuery)}`;
+
             return (
               <div key={item.id} className="bbeauty-salon-card">
                 <div className="bbeauty-card-media">
@@ -368,8 +423,35 @@ export const Home: FC<HomeProps> = ({ onNavigate }) => {
                     ))}
                   </div>
                   <div className="bbeauty-card-location">
-                    <div style={{ fontWeight: 600, color: '#4b4b56' }}>{item.city}, {item.state}</div>
-                    <div style={{ color: '#8a8a96', fontSize: '11px', marginTop: '2px' }}>{item.address}</div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
+                      <div>
+                        <div style={{ fontWeight: 600, color: '#4b4b56' }}>{item.city}, {item.state}</div>
+                        <div style={{ color: '#8a8a96', fontSize: '11px', marginTop: '2px' }}>{item.address}</div>
+                      </div>
+                      <a
+                        href={googleMapsUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="View exact location on Google Maps"
+                        onClick={(e) => e.stopPropagation()}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '3px',
+                          fontSize: '11px',
+                          fontWeight: 600,
+                          color: '#ea6a75',
+                          background: '#fff0f1',
+                          padding: '3px 8px',
+                          borderRadius: '12px',
+                          textDecoration: 'none',
+                          flexShrink: 0
+                        }}
+                      >
+                        <MapPin size={11} />
+                        <span>Maps ↗</span>
+                      </a>
+                    </div>
                   </div>
                   <div className="bbeauty-card-footer">
                     <div className="bbeauty-rating">
@@ -394,6 +476,8 @@ export const Home: FC<HomeProps> = ({ onNavigate }) => {
             const isFav = !!favorites[salon.id];
             const cover = (salon.images && salon.images[0]) || andrewSpaImg;
             const stateName = salon.state || getStateByCity(salon.city);
+            const mapsQuery = [salon.name, salon.address, salon.city, stateName, 'India'].filter(Boolean).join(', ');
+            const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapsQuery)}`;
 
             return (
               <div key={salon.id} className="bbeauty-salon-card">
@@ -413,9 +497,37 @@ export const Home: FC<HomeProps> = ({ onNavigate }) => {
                     <span className="bbeauty-tag">Verified Premier</span>
                     <span className="bbeauty-tag">📍 {stateName}</span>
                   </div>
-                  <div className="bbeauty-card-location">
-                    <MapPin size={14} style={{ color: '#ea6a75', flexShrink: 0 }} />
-                    <span>{salon.address}, {salon.city} &bull; <strong>{stateName}, India</strong></span>
+                  <div className="bbeauty-card-location" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden' }}>
+                      <MapPin size={14} style={{ color: '#ea6a75', flexShrink: 0 }} />
+                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {salon.address}, {salon.city} &bull; <strong>{stateName}</strong>
+                      </span>
+                    </div>
+                    <a
+                      href={googleMapsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="View exact location on Google Maps"
+                      onClick={(e) => e.stopPropagation()}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '3px',
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        color: '#ea6a75',
+                        background: '#fff0f1',
+                        padding: '3px 8px',
+                        borderRadius: '12px',
+                        textDecoration: 'none',
+                        flexShrink: 0,
+                        marginLeft: '6px'
+                      }}
+                    >
+                      <MapPin size={11} />
+                      <span>Maps ↗</span>
+                    </a>
                   </div>
                   <div className="bbeauty-card-footer">
                     <div className="bbeauty-rating">
@@ -500,8 +612,68 @@ export const Home: FC<HomeProps> = ({ onNavigate }) => {
       </section>
 
       {/* =========================================================================
-          MOBILE APPOINTMENT BOOKING PREVIEW (Right side of Dribbble Shot)
+          INTERACTIVE GOOGLE MAPS SECTION (Exact Locations Across India)
           ========================================================================= */}
+      <section className="container" id="google-maps-hubs-section" style={{ paddingBottom: '70px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '35px' }}>
+          <span style={{ color: '#ea6a75', fontWeight: 700, fontSize: '13px', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
+            Live Navigation &bull; Google Maps
+          </span>
+          <h2 style={{ fontSize: '36px', fontWeight: 800, color: '#1e1e24', marginTop: '6px' }}>
+            Locate Luxury Salons Near You
+          </h2>
+          <p style={{ color: '#7a7a85', maxWidth: '620px', margin: '8px auto 0', fontSize: '15px' }}>
+            View exact street coordinates, get turn-by-turn driving directions, and explore our premier beauty sanctuaries across India.
+          </p>
+        </div>
+
+        {/* City Filter Pills */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '25px' }}>
+          {mapLocations.map((loc) => {
+            const isSelected = selectedMapCity === loc.city;
+            return (
+              <button
+                key={loc.city}
+                onClick={() => setSelectedMapCity(loc.city)}
+                style={{
+                  background: isSelected ? '#ea6a75' : '#ffffff',
+                  color: isSelected ? '#ffffff' : '#4b4b56',
+                  border: isSelected ? '1px solid #ea6a75' : '1px solid #e8e8ee',
+                  borderRadius: '24px',
+                  padding: '8px 18px',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  cursor: 'pointer',
+                  boxShadow: isSelected ? '0 4px 14px rgba(234, 106, 117, 0.3)' : '0 2px 6px rgba(0,0,0,0.03)',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <MapPin size={13} style={{ color: isSelected ? '#ffffff' : '#ea6a75' }} />
+                <span>{loc.city} ({loc.state})</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Active Map Card */}
+        {activeMapLocation && (
+          <GoogleMapEmbed
+            salonName={activeMapLocation.name}
+            address={activeMapLocation.address}
+            city={activeMapLocation.city}
+            state={activeMapLocation.state}
+            phoneNumber={activeMapLocation.phone}
+            openTime={activeMapLocation.openTime}
+            closeTime={activeMapLocation.closeTime}
+            height="420px"
+            title={`${activeMapLocation.name} — Exact Google Maps Location`}
+          />
+        )}
+      </section>
+
       {/* =========================================================================
           BBEAUTY MOBILE PLATFORM SHOWCASE (Right side of Dribbble Shot)
           ========================================================================= */}
@@ -648,12 +820,13 @@ export const Home: FC<HomeProps> = ({ onNavigate }) => {
                 <div>
                   <div style={{ fontSize: '12px', fontWeight: 700, color: '#1e1e24', marginBottom: '6px' }}>Places nearby</div>
                   <div style={{ background: '#ffffff', borderRadius: '12px', padding: '8px', border: '1px solid #eee', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <img src={andrewSpaImg} alt="Bliss Spa" style={{ width: '42px', height: '42px', borderRadius: '8px', objectFit: 'cover' }} />
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 700, fontSize: '11px', color: '#1e1e24' }}>Bliss Spa &amp; Lounge</div>
-                      <span style={{ fontSize: '9px', color: '#27ae60', fontWeight: 700 }}>● Available</span>
+                    <div style={{ width: '36px', height: '36px', borderRadius: '8px', overflow: 'hidden' }}>
+                      <img src={andrewSpaImg} alt="Andrew Spa" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     </div>
-                    <button onClick={() => handleExplore(1001)} style={{ background: '#ea6a75', color: '#fff', border: 'none', borderRadius: '8px', padding: '3px 8px', fontSize: '9px', fontWeight: 600, cursor: 'pointer' }}>Book</button>
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: '11px', color: '#1e1e24' }}>Andrew Beauty Spa</div>
+                      <div style={{ fontSize: '10px', color: '#8a8a96' }}>Bandra West, Mumbai</div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -666,68 +839,99 @@ export const Home: FC<HomeProps> = ({ onNavigate }) => {
               </div>
             </div>
 
-            {/* Phone 3: My Appointments (Calendar) */}
+            {/* Phone 3: Calendar / Slot selection */}
             <div className="bbeauty-phone-frame">
               <div className="bbeauty-phone-notch" />
               <div className="bbeauty-phone-status-bar">
                 <span>9:41</span>
-                <span>My Appointments</span>
+                <span>Appointment</span>
               </div>
               <div className="bbeauty-phone-body">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <div style={{ fontWeight: 700, fontSize: '13px', color: '#1e1e24' }}>April, 2026 ⌵</div>
-                  <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#ea6a75', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Plus size={14} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                  <ChevronLeft size={16} />
+                  <span style={{ fontWeight: 700, fontSize: '14px' }}>Book Treatment</span>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', fontSize: '12px', fontWeight: 700 }}>
+                  <span>November 2026</span>
+                  <div style={{ display: 'flex', gap: '4px' }}>
+                    <ChevronLeft size={14} />
+                    <ChevronRight size={14} />
                   </div>
                 </div>
 
-                {/* Days of week */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', textAlign: 'center', fontSize: '9px', color: '#8a8a96', marginBottom: '4px' }}>
-                  <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
+                {/* Calendar strip */}
+                <div style={{ display: 'flex', gap: '6px', justifyContent: 'space-between', marginBottom: '14px' }}>
+                  {[
+                    { day: 'Mo', d: 7 },
+                    { day: 'Tu', d: 8 },
+                    { day: 'We', d: 9 },
+                    { day: 'Th', d: 10 },
+                    { day: 'Fr', d: 11 },
+                  ].map((item) => {
+                    const isSelected = selectedCalendarDay === item.d;
+                    return (
+                      <div
+                        key={item.d}
+                        onClick={() => setSelectedCalendarDay(item.d)}
+                        style={{
+                          flex: 1,
+                          padding: '6px 2px',
+                          textAlign: 'center',
+                          borderRadius: '12px',
+                          background: isSelected ? '#ea6a75' : '#f8f8fa',
+                          color: isSelected ? '#ffffff' : '#4b4b56',
+                          cursor: 'pointer',
+                          border: isSelected ? '1px solid #ea6a75' : '1px solid #eee'
+                        }}
+                      >
+                        <div style={{ fontSize: '9px' }}>{item.day}</div>
+                        <div style={{ fontSize: '12px', fontWeight: 800 }}>{item.d}</div>
+                      </div>
+                    );
+                  })}
                 </div>
-                {/* 14-day interactive grid */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '3px', textAlign: 'center', fontSize: '10px', marginBottom: '10px' }}>
-                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14].map((d) => (
+
+                {/* Available times */}
+                <div style={{ fontSize: '12px', fontWeight: 700, color: '#1e1e24', marginBottom: '6px' }}>Available hours</div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px', marginBottom: '14px' }}>
+                  {['09:00', '10:30', '12:00', '14:30', '16:00', '18:30'].map((time, idx) => (
                     <div
-                      key={d}
-                      onClick={() => setSelectedCalendarDay(d)}
+                      key={time}
                       style={{
-                        padding: '4px 0',
-                        borderRadius: '50%',
-                        cursor: 'pointer',
-                        fontWeight: selectedCalendarDay === d ? 700 : 500,
-                        background: selectedCalendarDay === d ? '#ea6a75' : 'transparent',
-                        color: selectedCalendarDay === d ? '#ffffff' : '#333'
+                        padding: '6px 4px',
+                        textAlign: 'center',
+                        fontSize: '10px',
+                        fontWeight: 600,
+                        borderRadius: '8px',
+                        background: idx === 1 ? '#fff0f1' : '#f8f8fa',
+                        color: idx === 1 ? '#ea6a75' : '#4b4b56',
+                        border: idx === 1 ? '1px solid #ea6a75' : '1px solid #eee'
                       }}
                     >
-                      {d}
+                      {time}
                     </div>
                   ))}
                 </div>
 
-                {/* Appointment Card */}
-                <div style={{ background: '#fff5f5', borderRadius: '14px', padding: '12px', border: '1px solid #f8e1e0', marginBottom: '10px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                    <span style={{ fontWeight: 700, fontSize: '12px', color: '#1e1e24' }}>Alpha Beauty</span>
-                    <span style={{ background: '#ea6a75', color: '#fff', fontSize: '9px', fontWeight: 700, padding: '2px 6px', borderRadius: '8px' }}>Confirmed</span>
+                {/* Master stylist selection */}
+                <div style={{ fontSize: '12px', fontWeight: 700, color: '#1e1e24', marginBottom: '6px' }}>Specialist</div>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center', background: '#f8f8fa', padding: '8px', borderRadius: '12px', border: '1px solid #eee' }}>
+                  <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#ffd5d1', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 800, color: '#ea6a75' }}>
+                    PK
                   </div>
-                  <div style={{ fontSize: '10px', color: '#7a7a85', marginBottom: '4px' }}>
-                    Indiranagar, Bengaluru &bull; ★ 4.9
-                  </div>
-                  <div style={{ fontSize: '11px', fontWeight: 600, color: '#1e1e24' }}>
-                    Deluxe Gel Pedicure &amp; Signature Cut
-                  </div>
-                  <div style={{ fontSize: '10px', color: '#ea6a75', marginTop: '4px', fontWeight: 600 }}>
-                    April {selectedCalendarDay}, 2026 &bull; 11:30 AM
+                  <div>
+                    <div style={{ fontSize: '11px', fontWeight: 700, color: '#1e1e24' }}>Pooja Kapoor</div>
+                    <div style={{ fontSize: '9px', color: '#8a8a96' }}>Senior Hair &amp; Glow Stylist</div>
                   </div>
                 </div>
 
-                <div style={{ fontSize: '11px', fontWeight: 700, color: '#1e1e24', marginBottom: '4px' }}>List of services</div>
-                <div style={{ fontSize: '10px', color: '#686875', lineHeight: 1.5 }}>
-                  ✓ Organic foot reflexology soak<br />
-                  ✓ Gel nail enamel &amp; precision buffing<br />
-                  ✓ Master styling &amp; blow-out finish
-                </div>
+                <button
+                  onClick={() => handleExplore(1001)}
+                  style={{ marginTop: 'auto', background: '#ea6a75', color: '#fff', border: 'none', borderRadius: '12px', padding: '8px', fontSize: '11px', fontWeight: 700, cursor: 'pointer', textAlign: 'center', width: '100%' }}
+                >
+                  Confirm Slot
+                </button>
               </div>
               <div className="bbeauty-phone-bottom-nav">
                 <HomeIcon size={16} />
@@ -738,15 +942,15 @@ export const Home: FC<HomeProps> = ({ onNavigate }) => {
               </div>
             </div>
 
-            {/* Phone 4: Salon About Profile */}
+            {/* Phone 4: Alpha Beauty Detail */}
             <div className="bbeauty-phone-frame">
               <div className="bbeauty-phone-notch" />
               <div className="bbeauty-phone-status-bar">
                 <span>9:41</span>
-                <span>About</span>
+                <span>Studio Details</span>
               </div>
               <div className="bbeauty-phone-body">
-                <div style={{ height: '110px', borderRadius: '12px', overflow: 'hidden', marginBottom: '8px' }}>
+                <div style={{ height: '90px', borderRadius: '12px', overflow: 'hidden', marginBottom: '8px' }}>
                   <img src={alphaBeautyImg} alt="Alpha Beauty" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
                 <div style={{ fontWeight: 800, fontSize: '14px', color: '#1e1e24' }}>Alpha beauty</div>
