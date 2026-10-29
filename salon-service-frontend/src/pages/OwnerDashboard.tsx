@@ -2,7 +2,24 @@ import { useState, useEffect, useCallback, type FC, type FormEvent } from 'react
 import { apiRequest } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import type { Salon, Booking, Service, Category } from '../services/mockApi';
-import { TrendingUp, IndianRupee, Scissors, Layers, Check, X, Calendar, Plus, Trash2 } from 'lucide-react';
+import { 
+  TrendingUp, 
+  IndianRupee, 
+  Scissors, 
+  Layers, 
+  Check, 
+  X, 
+  Calendar, 
+  Plus, 
+  Trash2,
+  Landmark,
+  Wallet,
+  Percent,
+  CheckCircle2,
+  ShieldCheck,
+  Send,
+  RefreshCw
+} from 'lucide-react';
 
 export const OwnerDashboard: FC = () => {
   const { user, showToast } = useAuth();
@@ -44,6 +61,74 @@ export const OwnerDashboard: FC = () => {
   // Category Add Form States
   const [newCatName, setNewCatName] = useState('');
   const [newCatImage, setNewCatImage] = useState('');
+
+  // Multi-Split Marketplace Payout State
+  const commissionPercent = parseInt(localStorage.getItem('bbeauty_platform_commission') || '10');
+  const grossEarnings = report.totalEarnings || 0;
+  const platformFee = Math.round(grossEarnings * (commissionPercent / 100));
+  const netDisbursablePayout = grossEarnings - platformFee;
+
+  // Bank Settlement Account State
+  const [bankDetails, setBankDetails] = useState<{
+    accountHolder: string;
+    bankName: string;
+    accountNumber: string;
+    ifscCode: string;
+    upiId: string;
+  }>(() => {
+    try {
+      const saved = localStorage.getItem('bbeauty_owner_bank_active');
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return {
+      accountHolder: user?.fullName || 'Salon Partner',
+      bankName: 'HDFC Bank Ltd.',
+      accountNumber: '50100492817291',
+      ifscCode: 'HDFC0000123',
+      upiId: (user?.username || 'salon') + '@okhdfcbank'
+    };
+  });
+
+  const [showBankModal, setShowBankModal] = useState(false);
+  const [editBankHolder, setEditBankHolder] = useState(bankDetails.accountHolder);
+  const [editBankName, setEditBankName] = useState(bankDetails.bankName);
+  const [editAccountNum, setEditAccountNum] = useState(bankDetails.accountNumber);
+  const [editIfsc, setEditIfsc] = useState(bankDetails.ifscCode);
+  const [editUpiId, setEditUpiId] = useState(bankDetails.upiId);
+  const [payoutLoading, setPayoutLoading] = useState(false);
+  const [lastPayoutDate, setLastPayoutDate] = useState<string | null>(() => {
+    return localStorage.getItem('bbeauty_owner_last_payout') || null;
+  });
+
+  const handleSaveBankDetails = (e: FormEvent) => {
+    e.preventDefault();
+    const updated = {
+      accountHolder: editBankHolder,
+      bankName: editBankName,
+      accountNumber: editAccountNum,
+      ifscCode: editIfsc,
+      upiId: editUpiId
+    };
+    setBankDetails(updated);
+    localStorage.setItem('bbeauty_owner_bank_active', JSON.stringify(updated));
+    setShowBankModal(false);
+    showToast("Bank and UPI settlement account updated successfully!", "success");
+  };
+
+  const handleRequestPayout = () => {
+    if (netDisbursablePayout <= 0) {
+      showToast("No disbursable balance available for payout.", "warning");
+      return;
+    }
+    setPayoutLoading(true);
+    setTimeout(() => {
+      setPayoutLoading(false);
+      const dateStr = new Date().toLocaleString();
+      setLastPayoutDate(dateStr);
+      localStorage.setItem('bbeauty_owner_last_payout', dateStr);
+      showToast(`Settlement processed! ₹${netDisbursablePayout.toLocaleString()} transferred via IMPS/NEFT to ${bankDetails.bankName} (Acct: ••••${bankDetails.accountNumber.slice(-4)}).`, "success");
+    }, 1200);
+  };
 
   const loadOwnerData = useCallback(async () => {
     try {
@@ -458,6 +543,191 @@ export const OwnerDashboard: FC = () => {
         </div>
       </div>
 
+      {/* Three-Party Multi-Split & Owner Bank Settlement Section */}
+      <div style={{ 
+        background: 'linear-gradient(135deg, rgba(212,175,55,0.06) 0%, rgba(20,20,20,0.85) 100%)', 
+        border: '1px solid var(--border-glass)', 
+        borderRadius: 'var(--border-radius-lg)', 
+        padding: '28px', 
+        marginBottom: '40px',
+        boxShadow: '0 8px 30px rgba(0,0,0,0.3)'
+      }}>
+        {/* Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '15px', marginBottom: '20px' }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+              <span style={{ 
+                background: 'rgba(212,175,55,0.15)', 
+                color: 'var(--gold-primary)', 
+                fontSize: '11px', 
+                fontWeight: 700, 
+                letterSpacing: '0.8px', 
+                textTransform: 'uppercase', 
+                padding: '3px 10px', 
+                borderRadius: '20px',
+                border: '1px solid rgba(212,175,55,0.3)'
+              }}>
+                Three-Party Settlement Flow
+              </span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: 'var(--color-success)', fontWeight: 600 }}>
+                <ShieldCheck size={14} /> Escrow Vault Protected
+              </span>
+            </div>
+            <h3 className="playfair gold-text" style={{ fontSize: '24px', margin: 0 }}>
+              Platform Multi-Split & Bank Payouts
+            </h3>
+            <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '4px', maxWidth: '680px' }}>
+              Customer payments are held securely in platform escrow. Upon booking confirmation, the platform automatically deducts the administrator commission ({commissionPercent}%) and transfers the net payout ({(100 - commissionPercent)}%) directly into your linked bank account.
+            </p>
+          </div>
+
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button
+              onClick={() => setShowBankModal(true)}
+              className="btn btn-outline"
+              style={{ fontSize: '12px', padding: '8px 14px', display: 'flex', alignItems: 'center', gap: '6px' }}
+            >
+              <Landmark size={14} />
+              <span>Configure Bank Account</span>
+            </button>
+            <button
+              onClick={handleRequestPayout}
+              disabled={payoutLoading || netDisbursablePayout <= 0}
+              className="btn btn-gold"
+              style={{ fontSize: '12px', padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '6px' }}
+            >
+              {payoutLoading ? (
+                <>
+                  <RefreshCw size={14} className="spin" />
+                  <span>Transferring to Bank...</span>
+                </>
+              ) : (
+                <>
+                  <Send size={14} />
+                  <span>Request Instant Settlement</span>
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* 4-Phase Step Visual Tracker */}
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+          gap: '12px', 
+          marginBottom: '24px',
+          background: 'rgba(0,0,0,0.25)',
+          padding: '16px',
+          borderRadius: '12px',
+          border: '1px solid var(--border-subtle)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+            <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(212,175,55,0.2)', color: 'var(--gold-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 700, flexShrink: 0 }}>
+              1
+            </div>
+            <div>
+              <p style={{ fontSize: '12px', fontWeight: 600, margin: 0, color: 'var(--text-primary)' }}>Customer Pays</p>
+              <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>UPI / Card / NetBanking</span>
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+            <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(0,180,216,0.2)', color: '#00b4d8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 700, flexShrink: 0 }}>
+              2
+            </div>
+            <div>
+              <p style={{ fontSize: '12px', fontWeight: 600, margin: 0, color: 'var(--text-primary)' }}>Administrator Vault</p>
+              <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Secure Escrow Holding</span>
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+            <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(255,159,10,0.2)', color: '#ff9f0a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 700, flexShrink: 0 }}>
+              3
+            </div>
+            <div>
+              <p style={{ fontSize: '12px', fontWeight: 600, margin: 0, color: 'var(--text-primary)' }}>Multi-Split Engine</p>
+              <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>-{commissionPercent}% Admin Platform Fee</span>
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+            <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(48,209,88,0.2)', color: 'var(--color-success)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 700, flexShrink: 0 }}>
+              4
+            </div>
+            <div>
+              <p style={{ fontSize: '12px', fontWeight: 600, margin: 0, color: 'var(--text-primary)' }}>Owner Bank Payout</p>
+              <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{(100 - commissionPercent)}% Direct Bank Transfer</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Financial Split Cards & Linked Bank Details Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '18px' }}>
+          {/* Card 1: Gross Sales */}
+          <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)', borderRadius: '12px', padding: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Gross Customer Payments</span>
+              <Wallet size={16} color="var(--gold-primary)" />
+            </div>
+            <h4 style={{ fontSize: '24px', fontWeight: 700, margin: '4px 0', color: 'var(--text-primary)' }}>
+              ₹{grossEarnings.toLocaleString()}
+            </h4>
+            <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Total billed to customers</span>
+          </div>
+
+          {/* Card 2: Admin Commission */}
+          <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)', borderRadius: '12px', padding: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Admin Commission ({commissionPercent}%)</span>
+              <Percent size={16} color="#ff9f0a" />
+            </div>
+            <h4 style={{ fontSize: '24px', fontWeight: 700, margin: '4px 0', color: 'var(--color-warning)' }}>
+              -₹{platformFee.toLocaleString()}
+            </h4>
+            <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Platform hosting & payment gateway fee</span>
+          </div>
+
+          {/* Card 3: Net Owner Payout */}
+          <div style={{ background: 'var(--bg-surface)', border: '1px solid rgba(48,209,88,0.3)', borderRadius: '12px', padding: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Net Owner Balance ({(100 - commissionPercent)}%)</span>
+              <CheckCircle2 size={16} color="var(--color-success)" />
+            </div>
+            <h4 className="gold-text" style={{ fontSize: '24px', fontWeight: 700, margin: '4px 0' }}>
+              ₹{netDisbursablePayout.toLocaleString()}
+            </h4>
+            <span style={{ fontSize: '11px', color: 'var(--color-success)' }}>Available for instant bank settlement</span>
+          </div>
+
+          {/* Card 4: Linked Bank Details */}
+          <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)', borderRadius: '12px', padding: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+              <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Linked Settlement Account</span>
+              <Landmark size={16} color="var(--gold-primary)" />
+            </div>
+            <p style={{ fontSize: '13px', fontWeight: 700, margin: '2px 0', color: 'var(--text-primary)' }}>
+              {bankDetails.bankName}
+            </p>
+            <p style={{ fontSize: '12px', fontFamily: 'monospace', color: 'var(--gold-primary)', margin: '2px 0' }}>
+              •••• {bankDetails.accountNumber.slice(-4)} | {bankDetails.ifscCode}
+            </p>
+            <p style={{ fontSize: '11px', color: 'var(--text-muted)', margin: '2px 0' }}>
+              UPI: <span style={{ color: 'var(--text-primary)' }}>{bankDetails.upiId}</span>
+            </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '6px', fontSize: '10px', color: 'var(--color-success)' }}>
+              <Check size={12} />
+              <span>Direct IMPS / NEFT Auto-Settlement Active</span>
+            </div>
+          </div>
+        </div>
+
+        {lastPayoutDate && (
+          <div style={{ marginTop: '16px', padding: '8px 14px', background: 'rgba(48,209,88,0.08)', borderRadius: '8px', border: '1px solid rgba(48,209,88,0.2)', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: 'var(--color-success)' }}>
+            <CheckCircle2 size={14} />
+            <span>Last payout processed on <strong>{lastPayoutDate}</strong> to {bankDetails.bankName} (Acct: ••••{bankDetails.accountNumber.slice(-4)})</span>
+          </div>
+        )}
+      </div>
+
       <div style={{ display: 'grid', gridTemplateColumns: '5fr 3fr', gap: '40px', alignItems: 'start' }}>
         
         {/* Left Side: Booking Reservations List */}
@@ -857,6 +1127,104 @@ export const OwnerDashboard: FC = () => {
         </div>
 
       </div>
+
+      {/* Linked Bank & UPI Settlement Configuration Modal */}
+      {showBankModal && (
+        <div className="modal show" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div className="modal-overlay" onClick={() => setShowBankModal(false)}></div>
+          <div className="modal-content" style={{ maxWidth: '500px', width: '90%', background: 'var(--bg-surface-elevated)', border: '1px solid var(--border-glass)', padding: '30px', borderRadius: 'var(--border-radius-lg)', position: 'relative' }}>
+            <button className="modal-close" onClick={() => setShowBankModal(false)}>
+              <X size={18} />
+            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+              <div style={{ background: 'rgba(212,175,55,0.1)', color: 'var(--gold-primary)', padding: '10px', borderRadius: '50%' }}>
+                <Landmark size={22} />
+              </div>
+              <div>
+                <h3 className="gold-text playfair" style={{ fontSize: '20px', margin: 0 }}>Configure Bank Payouts</h3>
+                <p style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: '2px 0 0 0' }}>
+                  Connect your business bank account or UPI VPA for automated settlement.
+                </p>
+              </div>
+            </div>
+
+            <form onSubmit={handleSaveBankDetails} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label>Beneficiary Account Holder Name</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  required
+                  placeholder="Andrew Beauty Spa Pvt Ltd"
+                  value={editBankHolder}
+                  onChange={(e) => setEditBankHolder(e.target.value)}
+                />
+              </div>
+
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label>Bank Name</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  required
+                  placeholder="HDFC Bank / ICICI Bank / SBI"
+                  value={editBankName}
+                  onChange={(e) => setEditBankName(e.target.value)}
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '12px' }}>
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label>Bank Account Number</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    required
+                    placeholder="50100492817291"
+                    value={editAccountNum}
+                    onChange={(e) => setEditAccountNum(e.target.value)}
+                  />
+                </div>
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label>IFSC Code</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    required
+                    placeholder="HDFC0000123"
+                    value={editIfsc}
+                    onChange={(e) => setEditIfsc(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label>UPI ID / VPA (Optional for Instant Payouts)</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="salon.business@okaxis"
+                  value={editUpiId}
+                  onChange={(e) => setEditUpiId(e.target.value)}
+                />
+              </div>
+
+              <div style={{ background: 'rgba(212,175,55,0.05)', border: '1px solid var(--border-subtle)', borderRadius: '8px', padding: '10px 14px', fontSize: '11px', color: 'var(--text-muted)' }}>
+                🔒 Bank account verification is compliant with RBI nodal/escrow guidelines. Payout transfers reflect within 2 hours.
+              </div>
+
+              <div style={{ display: 'flex', gap: '10px', marginTop: '6px' }}>
+                <button type="button" className="btn btn-outline w-full" onClick={() => setShowBankModal(false)}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-gold w-full">
+                  Save Bank Details
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

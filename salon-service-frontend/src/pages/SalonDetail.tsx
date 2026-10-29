@@ -5,7 +5,7 @@ import { DEFAULT_MOCK_SALONS, DEFAULT_MOCK_SERVICES, type Salon, type Service } 
 import { ReviewSection } from '../components/ReviewSection';
 import { UPIQrPayment } from '../components/UPIQrPayment';
 import { GoogleMapEmbed } from '../components/GoogleMapEmbed';
-import { Clock, MapPin, Phone, Star, Calendar, ArrowRight, X, ChevronLeft, ExternalLink } from 'lucide-react';
+import { Clock, MapPin, Phone, Star, Calendar, ArrowRight, X, ChevronLeft, ExternalLink, ShieldCheck } from 'lucide-react';
 
 interface SalonDetailProps {
   salonId: number;
@@ -521,8 +521,30 @@ export const SalonDetail: FC<SalonDetailProps> = ({ salonId, onNavigate }) => {
                   )}
                 </div>
 
+                {/* Transparent Three-Party Escrow Breakdown */}
+                <div style={{ background: 'rgba(212,175,55,0.04)', border: '1px solid var(--border-glass)', borderRadius: '10px', padding: '14px 16px', margin: '18px 0 12px 0' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '6px' }}>
+                    <span style={{ color: 'var(--text-secondary)' }}>Treatment Subtotal:</span>
+                    <span style={{ fontWeight: 600 }}>₹{totalPrice}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '8px' }}>
+                    <span style={{ color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <ShieldCheck size={14} color="var(--gold-primary)" /> Platform Escrow Vault:
+                    </span>
+                    <span style={{ color: 'var(--color-success)', fontWeight: 600 }}>Included (Zero Fee)</span>
+                  </div>
+                  <div style={{ borderTop: '1px dashed var(--border-subtle)', paddingTop: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontWeight: 700, fontSize: '14px' }}>Total Amount:</span>
+                    <span className="gold-text" style={{ fontSize: '18px', fontWeight: 800 }}>₹{totalPrice}</span>
+                  </div>
+                  <p style={{ fontSize: '10px', color: 'var(--text-muted)', margin: '6px 0 0 0', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <span>🔒</span>
+                    <span>100% Protected Escrow: Payment is vaulted and released to the salon only upon service delivery.</span>
+                  </p>
+                </div>
+
                 <button
-                  className="btn btn-gold w-full mt-4"
+                  className="btn btn-gold w-full mt-2"
                   disabled={!selectedSlot || checkingSlots}
                   onClick={handleBookingSubmit}
                   style={{ display: 'flex', gap: '6px' }}
