@@ -1,7 +1,3 @@
-
-
-
-
 server:
   port: 5006
 
@@ -10,16 +6,18 @@ spring:
     name: payment-service
 
   datasource:
-    url: jdbc:mysql://gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/salon
-    username: yq9eAkzxxvnYuz5.root
-    password: ER5KAuU7ycb51i90
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/salon?sslMode=VERIFY_IDENTITY}
+    username: ${SPRING_DATASOURCE_USERNAME:yq9eAkzxxvnYuz5.root}
+    password: ${SPRING_DATASOURCE_PASSWORD:ER5KAuU7ycb51i90}
 
   rabbitmq:
-    host: armadillo.rmq.cloudamqp.com
-    port: 5672
-    username: avhqyyix
-    password: ghDX0t0EkLkCdj0-wcDgtm2Honpt9sDk
-    virtual-host: avhqyyix
+    host: ${SPRING_RABBITMQ_HOST:frog.lmq.cloudamqp.com}
+    port: ${SPRING_RABBITMQ_PORT:5671}
+    username: ${SPRING_RABBITMQ_USERNAME:lvefmwnj}
+    password: ${SPRING_RABBITMQ_PASSWORD:8EEJU4SYUV69SERKgCFdSEMB58ABPBXX}
+    virtual-host: ${SPRING_RABBITMQ_VIRTUAL_HOST:lvefmwnj}
+    ssl:
+      enabled: ${SPRING_RABBITMQ_SSL_ENABLED:true}
 
   jpa:
     hibernate:
@@ -28,13 +26,12 @@ spring:
 
 razorpay:
   api:
-    key: "rzp_test_Shc0DpxrMa0ZCr"
-    secret: "SigQYilPFZ326PS55dToGIw2"
+    key: "${RAZORPAY_API_KEY:rzp_test_Shc0DpxrMa0ZCr}"
+    secret: "${RAZORPAY_API_SECRET:SigQYilPFZ326PS55dToGIw2}"
 
 stripe:
   api:
-    key: "your stripe api key"
-
+    key: "${STRIPE_API_KEY:your stripe api key}"
 
 eureka:
   instance:
@@ -44,4 +41,4 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: https://eureka-4.onrender.com/eureka/
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:https://eureka-4.onrender.com/eureka/}
