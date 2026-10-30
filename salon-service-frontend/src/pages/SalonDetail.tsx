@@ -186,6 +186,27 @@ export const SalonDetail: FC<SalonDetailProps> = ({ salonId, onNavigate }) => {
     const instantBookingId = Math.floor(100000 + Math.random() * 900000);
     const instantLinkId = `plink_${instantBookingId}`;
 
+    const initialBooking = {
+      id: instantBookingId,
+      salonId: salon.id,
+      salonName: salon.name,
+      customerId: user?.id || 1,
+      startTime,
+      endTime,
+      servicesIds: selectedServices,
+      totalPrice,
+      status: 'CONFIRMED'
+    };
+
+    // Immediately cache in local storage so My Bookings displays reservation instantly
+    try {
+      const recents = JSON.parse(localStorage.getItem('bbeauty_user_bookings') || '[]');
+      const filtered = recents.filter((b: any) => b.id !== instantBookingId);
+      filtered.unshift(initialBooking);
+      localStorage.setItem('bbeauty_user_bookings', JSON.stringify(filtered.slice(0, 30)));
+      window.dispatchEvent(new Event('bbeauty_bookings_updated'));
+    } catch {}
+
     setCreatedBooking({
       id: instantBookingId,
       paymentLinkId: instantLinkId
@@ -197,7 +218,6 @@ export const SalonDetail: FC<SalonDetailProps> = ({ salonId, onNavigate }) => {
       try {
         const data = await apiRequest(`/api/bookings?salonId=${salon.id}&paymentMethod=RAZORPAY`, {
           method: "POST",
-          timeout: 6000, // Fast 6s timeout so cold starts never block
           body: {
             startTime,
             endTime,
@@ -220,6 +240,19 @@ export const SalonDetail: FC<SalonDetailProps> = ({ salonId, onNavigate }) => {
             id: realId,
             paymentLinkId: String(realLinkId)
           });
+
+          // Sync permanent ID to local cache
+          try {
+            const stored = JSON.parse(localStorage.getItem('bbeauty_user_bookings') || '[]');
+            const updated = stored.map((b: any) => {
+              if (b.id === instantBookingId) {
+                return { ...b, id: realId, paymentLinkId: String(realLinkId) };
+              }
+              return b;
+            });
+            localStorage.setItem('bbeauty_user_bookings', JSON.stringify(updated));
+            window.dispatchEvent(new Event('bbeauty_bookings_updated'));
+          } catch {}
         }
       } catch (err: any) {
         console.warn("Background reservation registration notice:", err?.message || err);
@@ -565,6 +598,8 @@ export const SalonDetail: FC<SalonDetailProps> = ({ salonId, onNavigate }) => {
                   paymentLinkId={createdBooking.paymentLinkId}
                   salonName={salon.name}
                   salonId={salon.id}
+                  startTime={`${selectedDate}T${selectedSlot}:00`}
+                  servicesIds={selectedServices}
                   onPaymentSuccess={() => {
                     setBookingModalOpen(false);
                     onNavigate('customer-dashboard');

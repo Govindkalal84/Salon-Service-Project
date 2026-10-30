@@ -2,12 +2,12 @@ import { useState, useEffect, type FC } from 'react';
 import { apiRequest } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import type { Booking, Salon } from '../services/mockApi';
-import { Calendar, Clock, X, Star } from 'lucide-react';
+import { Calendar, Clock, X, Star, ArrowRight } from 'lucide-react';
 
 export const CustomerDashboard: FC = () => {
   const { user, showToast } = useAuth();
   
-  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [bookings, setBookings] = useState<any[]>([]);
   const [salons, setSalons] = useState<Salon[]>([]);
   const [loading, setLoading] = useState(true);
   
@@ -20,8 +20,52 @@ export const CustomerDashboard: FC = () => {
   const loadDashboardData = async () => {
     try {
       setLoading(true);
-      const bookingsData = await apiRequest("/api/bookings/customer");
-      setBookings(Array.isArray(bookingsData) ? bookingsData : []);
+      let backendBookings: Booking[] = [];
+      try {
+        const bookingsData = await apiRequest("/api/bookings/customer");
+        if (Array.isArray(bookingsData)) {
+          backendBookings = bookingsData;
+        }
+      } catch (err) {
+        console.warn("Could not fetch remote customer bookings:", err);
+      }
+
+      // Also read local bookings from cache
+      let localBookings: any[] = [];
+      try {
+        const stored = localStorage.getItem("bbeauty_user_bookings");
+        if (stored) {
+          localBookings = JSON.parse(stored);
+          if (!Array.isArray(localBookings)) localBookings = [];
+        }
+      } catch {}
+
+      // Merge: backend bookings take priority, local bookings provide zero-latency resilience
+      const mergedMap = new Map<number | string, any>();
+
+      // Put local bookings first
+      localBookings.forEach(b => {
+        if (b && b.id) {
+          mergedMap.set(b.id, b);
+        }
+      });
+
+      // Put backend bookings (overwrites matching ID)
+      backendBookings.forEach(b => {
+        if (b && b.id) {
+          mergedMap.set(b.id, b);
+        }
+      });
+
+      const allMerged = Array.from(mergedMap.values());
+      // Sort newest first
+      allMerged.sort((a, b) => {
+        const timeA = new Date(a.startTime || a.createdAt || a.date || 0).getTime();
+        const timeB = new Date(b.startTime || b.createdAt || b.date || 0).getTime();
+        return timeB - timeA;
+      });
+
+      setBookings(allMerged);
       
       const salonsData = await apiRequest("/api/salons");
       setSalons(Array.isArray(salonsData) ? salonsData : []);
@@ -34,10 +78,20 @@ export const CustomerDashboard: FC = () => {
 
   useEffect(() => {
     loadDashboardData();
+
+    const handleUpdate = () => loadDashboardData();
+    window.addEventListener('bbeauty_bookings_updated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+    return () => {
+      window.removeEventListener('bbeauty_bookings_updated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
   }, []);
 
-  const getSalonName = (salonId: number) => {
-    return salons.find(s => s.id === salonId)?.name || `Salon #${salonId}`;
+  const getSalonName = (booking: any) => {
+    if (booking?.salonName) return booking.salonName;
+    const salonId = booking?.salonId;
+    return salons.find(s => s.id === salonId)?.name || (salonId ? `Salon #${salonId}` : 'BBeauty Luxury Salon');
   };
 
   const handleCancelBooking = async (bookingId: number) => {
@@ -45,8 +99,22 @@ export const CustomerDashboard: FC = () => {
     if (!confirmCancel) return;
     
     try {
-      // Endpoint /api/bookings/{bookingId}/status?status=CANCELLED
-      await apiRequest(`/api/bookings/${bookingId}/status?status=CANCELLED`, { method: "PUT" });
+      try {
+        await apiRequest(`/api/bookings/${bookingId}/status?status=CANCELLED`, { method: "PUT" });
+      } catch (err) {
+        console.warn("Remote cancel sync note:", err);
+      }
+
+      // Update in local cache
+      try {
+        const stored = localStorage.getItem("bbeauty_user_bookings");
+        if (stored) {
+          const list = JSON.parse(stored);
+          const updated = list.map((b: any) => b.id === bookingId ? { ...b, status: 'CANCELLED' } : b);
+          localStorage.setItem("bbeauty_user_bookings", JSON.stringify(updated));
+        }
+      } catch {}
+
       showToast("Reservation cancelled successfully", "info");
       loadDashboardData();
     } catch (e: any) {
@@ -78,11 +146,20 @@ export const CustomerDashboard: FC = () => {
     }
   };
 
-  const formatDateTime = (isoString: string) => {
-    const d = new Date(isoString);
-    const dateStr = d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
-    const timeStr = d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: true });
-    return { dateStr, timeStr };
+  const formatDateTime = (isoString?: string) => {
+    if (!isoString) {
+      return { dateStr: 'Today', timeStr: 'Scheduled' };
+    }
+    try {
+      const d = new Date(isoString);
+      if (isNaN(d.getTime())) throw new Error("Invalid date");
+      const dateStr = d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
+      const timeStr = d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: true });
+      return { dateStr, timeStr };
+    } catch {
+      const parts = String(isoString).split('T');
+      return { dateStr: parts[0] || 'Scheduled', timeStr: parts[1]?.substring(0, 5) || '10:00 AM' };
+    }
   };
 
   if (loading) {
@@ -102,7 +179,7 @@ export const CustomerDashboard: FC = () => {
           <h2 className="playfair" style={{ fontSize: '32px' }}>My Bookings</h2>
         </div>
         <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-subtle)', borderRadius: '12px', padding: '10px 20px', fontSize: '14px' }}>
-          Welcome back, <strong className="gold-text">{user?.fullName}</strong>
+          Welcome back, <strong className="gold-text">{user?.fullName || 'Valued Guest'}</strong>
         </div>
       </div>
 
@@ -110,7 +187,21 @@ export const CustomerDashboard: FC = () => {
         <div className="empty-state" style={{ padding: '60px 20px', textAlign: 'center', background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)', borderRadius: '20px' }}>
           <Calendar size={40} className="gold-text" style={{ marginBottom: '15px' }} />
           <h3>No Reservations Yet</h3>
-          <p style={{ color: 'var(--text-secondary)', marginBottom: '20px' }}>You haven't booked any grooming treatments yet. Find a premier salon and treat yourself!</p>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>You haven't booked any grooming treatments yet. Find a premier salon and treat yourself!</p>
+          <a
+            href="#salons"
+            className="btn btn-gold"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '12px 28px',
+              fontWeight: 700
+            }}
+          >
+            <span>Explore Premier Salons</span>
+            <ArrowRight size={16} />
+          </a>
         </div>
       ) : (
         <div className="table-responsive" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-glass)', borderRadius: 'var(--border-radius-lg)', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.4)' }}>
@@ -128,11 +219,12 @@ export const CustomerDashboard: FC = () => {
             </thead>
             <tbody>
               {bookings.map(booking => {
-                const { dateStr, timeStr } = formatDateTime(booking.startTime);
+                const { dateStr, timeStr } = formatDateTime(booking.startTime || booking.date);
+                const bookingRef = String(booking.id).replace(/\D/g, '').substring(0, 8) || String(booking.id);
                 return (
                   <tr key={booking.id} style={{ borderBottom: '1px solid var(--border-subtle)', transition: 'var(--transition-smooth)' }}>
-                    <td style={{ padding: '18px 20px', fontFamily: 'monospace', fontWeight: 600 }}>#RSV-{booking.id.toString().substring(0, 10)}</td>
-                    <td style={{ padding: '18px 20px', fontWeight: 600, color: 'var(--text-primary)' }}>{getSalonName(booking.salonId)}</td>
+                    <td style={{ padding: '18px 20px', fontFamily: 'monospace', fontWeight: 600 }}>#RSV-{bookingRef}</td>
+                    <td style={{ padding: '18px 20px', fontWeight: 600, color: 'var(--text-primary)' }}>{getSalonName(booking)}</td>
                     <td style={{ padding: '18px 20px' }}>
                       <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                         <Calendar size={14} className="gold-text" />
@@ -147,7 +239,7 @@ export const CustomerDashboard: FC = () => {
                     </td>
                     <td style={{ padding: '18px 20px', fontWeight: 700, color: 'var(--gold-primary)' }}>₹{booking.totalPrice}</td>
                     <td style={{ padding: '18px 20px' }}>
-                      <span className={`status-badge ${booking.status.toLowerCase()}`} style={{
+                      <span className={`status-badge ${(booking.status || 'PENDING').toLowerCase()}`} style={{
                         display: 'inline-block',
                         padding: '3px 8px',
                         borderRadius: '10px',
@@ -157,7 +249,7 @@ export const CustomerDashboard: FC = () => {
                         color: booking.status === 'CONFIRMED' ? 'var(--color-success)' : booking.status === 'PENDING' ? 'var(--color-warning)' : 'var(--color-danger)',
                         background: booking.status === 'CONFIRMED' ? 'rgba(48,209,88,0.1)' : booking.status === 'PENDING' ? 'rgba(255,159,10,0.1)' : 'rgba(255,69,58,0.1)'
                       }}>
-                        {booking.status}
+                        {booking.status || 'CONFIRMED'}
                       </span>
                     </td>
                     <td style={{ padding: '18px 20px', textAlign: 'center' }}>
@@ -165,13 +257,13 @@ export const CustomerDashboard: FC = () => {
                         {booking.status === 'CONFIRMED' && (
                           <button
                             className="btn btn-outline"
-                            onClick={() => handleOpenReview(booking.salonId)}
+                            onClick={() => handleOpenReview(booking.salonId || 1)}
                             style={{ padding: '6px 12px', fontSize: '11px', textTransform: 'none' }}
                           >
                             Review
                           </button>
                         )}
-                        {(booking.status === 'PENDING' || booking.status === 'CONFIRMED') && (
+                        {(booking.status === 'PENDING' || booking.status === 'CONFIRMED' || !booking.status) && (
                           <button
                             className="btn btn-secondary text-danger"
                             onClick={() => handleCancelBooking(booking.id)}

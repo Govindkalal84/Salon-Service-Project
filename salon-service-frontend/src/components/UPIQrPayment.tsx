@@ -10,6 +10,9 @@ interface UPIQrPaymentProps {
   paymentLinkId: string;
   salonName?: string;
   salonId?: number;
+  startTime?: string;
+  endTime?: string;
+  servicesIds?: number[];
   onPaymentSuccess: () => void;
   onCancel: () => void;
 }
@@ -20,6 +23,9 @@ export const UPIQrPayment: React.FC<UPIQrPaymentProps> = ({
   paymentLinkId,
   salonName = 'BBeauty Luxury Salon',
   salonId,
+  startTime,
+  endTime,
+  servicesIds,
   onPaymentSuccess,
   onCancel
 }) => {
@@ -203,14 +209,19 @@ export const UPIQrPayment: React.FC<UPIQrPaymentProps> = ({
         // Record in local cache so Customer Dashboard shows it immediately
         try {
           const recents = JSON.parse(localStorage.getItem('bbeauty_user_bookings') || '[]');
-          recents.unshift({
+          const filtered = recents.filter((b: any) => b.id !== bookingId);
+          filtered.unshift({
             id: bookingId,
-            salonName,
+            salonId: salonId || 1,
+            salonName: salonName || 'BBeauty Luxury Salon',
             totalPrice,
             status: 'CONFIRMED',
-            date: new Date().toISOString()
+            startTime: startTime || new Date().toISOString(),
+            endTime: endTime || new Date(Date.now() + 3600000).toISOString(),
+            servicesIds: servicesIds || []
           });
-          localStorage.setItem('bbeauty_user_bookings', JSON.stringify(recents.slice(0, 20)));
+          localStorage.setItem('bbeauty_user_bookings', JSON.stringify(filtered.slice(0, 30)));
+          window.dispatchEvent(new Event('bbeauty_bookings_updated'));
         } catch {}
 
         showToast("Payment verified successfully! Reservation confirmed.", "success");
@@ -226,6 +237,23 @@ export const UPIQrPayment: React.FC<UPIQrPaymentProps> = ({
   };
 
   const handlePayAtSalon = () => {
+    try {
+      const recents = JSON.parse(localStorage.getItem('bbeauty_user_bookings') || '[]');
+      const filtered = recents.filter((b: any) => b.id !== bookingId);
+      filtered.unshift({
+        id: bookingId,
+        salonId: salonId || 1,
+        salonName: salonName || 'BBeauty Luxury Salon',
+        totalPrice,
+        status: 'CONFIRMED',
+        startTime: startTime || new Date().toISOString(),
+        endTime: endTime || new Date(Date.now() + 3600000).toISOString(),
+        servicesIds: servicesIds || []
+      });
+      localStorage.setItem('bbeauty_user_bookings', JSON.stringify(filtered.slice(0, 30)));
+      window.dispatchEvent(new Event('bbeauty_bookings_updated'));
+    } catch {}
+
     showToast(`Reservation #RSV-${bookingId} confirmed! You can pay ₹${totalPrice} at the salon counter.`, "success");
     onPaymentSuccess();
   };

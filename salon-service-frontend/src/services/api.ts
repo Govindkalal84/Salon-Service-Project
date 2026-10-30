@@ -77,7 +77,9 @@ export async function apiRequest(endpoint: string, options: any = {}): Promise<a
   
   const jwt = localStorage.getItem("jwt");
   if (jwt) {
-    options.headers["Authorization"] = `Bearer ${jwt}`;
+    const bearer = jwt.startsWith('Bearer ') || jwt.startsWith('bearer ') ? jwt : `Bearer ${jwt}`;
+    options.headers["Authorization"] = bearer;
+    options.headers["jwt"] = bearer;
   }
   
   // Default to JSON content type if body is object and not FormData
@@ -108,7 +110,9 @@ export async function apiRequest(endpoint: string, options: any = {}): Promise<a
         if (refreshed) {
           // Retry request with new token
           const newJwt = localStorage.getItem("jwt");
-          options.headers["Authorization"] = `Bearer ${newJwt}`;
+          const refreshedBearer = newJwt?.startsWith('Bearer ') ? newJwt : `Bearer ${newJwt}`;
+          options.headers["Authorization"] = refreshedBearer;
+          options.headers["jwt"] = refreshedBearer;
           response = await fetch(url, options);
         } else {
           if (globalLogoutHandler) {
